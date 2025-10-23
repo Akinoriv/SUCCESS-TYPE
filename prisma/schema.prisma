@@ -12,6 +12,7 @@ model User {
   email           String?
   age             Int?
   gender          String?
+  profileData     Json? 
   createdAt       DateTime        @default(now())
   quizSessions    QuizSession[]
   purchases       Purchase[]
@@ -105,4 +106,34 @@ model AnalyticsEvent {
   @@index([eventType, timestamp])
   @@index([variantId, timestamp])
   @@map("analytics_events")
+}
+
+model Question {
+  id            String   @id @default(uuid())
+  quizId        String   @default("main")
+  order         Int
+  textDefault   String
+  variations    Json?
+  type          String
+  options       Json?
+  dimension     String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  @@unique([quizId, order])
+  @@map("questions")
+}
+
+model PersonalityType {
+  id                 String   @id @default(uuid())
+  quizId             String   @default("main")
+  slug               String   @unique
+  titleDefault       String
+  descriptionDefault String
+  contentDefault     Json
+  variations         Json?
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  @@map("personality_types")
 }

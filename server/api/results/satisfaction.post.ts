@@ -2,6 +2,8 @@
  * POST /api/results/satisfaction
  * Сохранение оценки удовлетворённости результатом
  */
+import { prisma } from "../../../utils/db";
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
