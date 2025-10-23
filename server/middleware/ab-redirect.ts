@@ -2,6 +2,8 @@
  * A/B Testing Middleware
  * Автоматический редирект пользователей на соответствующий вариант landing page
  */
+import { prisma } from "../../utils/db";
+
 export default defineEventHandler(async (event) => {
   // Проверяем только GET запросы к корню
   if (getMethod(event) !== "GET" || getRouterParam(event, "slug")) {
