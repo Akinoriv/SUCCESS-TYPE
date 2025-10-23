@@ -95,6 +95,18 @@ model UserAssignment {
   @@map("user_assignments")
 }
 
+model Question {
+  id          String   @id @default(uuid())
+  order       Int      @unique
+  textDefault String
+  variations  Json     // { "default": "текст", "male": "текст для мужчин", "female": "текст для женщин" }
+  type        String   // "choice" или "scale"
+  options     Json     // { "A": { "text": "текст", "score": 1 }, "Б": {...} } или { "min": 1, "max": 10 }
+  dimension   String   // "energy" или "focus"
+  createdAt   DateTime @default(now())
+  @@map("questions")
+}
+
 model AnalyticsEvent {
   id        String   @id @default(uuid())
   eventType String
@@ -108,32 +120,3 @@ model AnalyticsEvent {
   @@map("analytics_events")
 }
 
-model Question {
-  id            String   @id @default(uuid())
-  quizId        String   @default("main")
-  order         Int
-  textDefault   String
-  variations    Json?
-  type          String
-  options       Json?
-  dimension     String
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  @@unique([quizId, order])
-  @@map("questions")
-}
-
-model PersonalityType {
-  id                 String   @id @default(uuid())
-  quizId             String   @default("main")
-  slug               String   @unique
-  titleDefault       String
-  descriptionDefault String
-  contentDefault     Json
-  variations         Json?
-  isActive           Boolean  @default(true)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  @@map("personality_types")
-}

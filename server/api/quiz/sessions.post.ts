@@ -5,7 +5,7 @@
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { userId, quizId } = body;
+    const { userId, quizId, profileData } = body;
 
     // Валидация входных данных
     if (!userId || !quizId) {
@@ -17,6 +17,31 @@ export default defineEventHandler(async (event) => {
 
     // Получаем IP адрес пользователя
     const ipAddress = getClientIP(event);
+
+    // Создаём или обновляем пользователя с profileData
+    let user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          id: userId,
+          gender: profileData?.gender,
+          age: profileData?.age,
+          profileData: profileData || {},
+        },
+      });
+    } else if (profileData) {
+      user = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          gender: profileData.gender || user.gender,
+          age: profileData.age || user.age,
+          profileData: { ...user.profileData, ...profileData },
+        },
+      });
+    }
 
     // Создаём новую сессию
     const session = await prisma.quizSession.create({
@@ -31,6 +56,7 @@ export default defineEventHandler(async (event) => {
       success: true,
       data: {
         sessionId: session.id,
+        userId: user.id,
         startedAt: session.startedAt,
       },
     };
