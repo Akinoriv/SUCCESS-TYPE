@@ -2,6 +2,9 @@
  * GET /api/ab-test/get-variants
  * Получение списка активных вариантов для A/B тестирования
  */
+
+import { prisma } from "../../../utils/db";
+
 export default defineEventHandler(async (event) => {
   try {
     // Получаем все активные варианты

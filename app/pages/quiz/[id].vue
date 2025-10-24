@@ -146,8 +146,8 @@
 </template>
 
 <script setup lang="ts">
-import { useQuizStore } from "../../stores/quiz";
-import { useYandexMetrika } from "../../composables/useYandexMetrika";
+import { useQuizStore } from "../../../stores/quiz";
+import { useYandexMetrika } from "../../../composables/useYandexMetrika";
 
 // Store
 const quizStore = useQuizStore();

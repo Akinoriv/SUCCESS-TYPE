@@ -2,6 +2,8 @@
  * GET /api/analytics/variants
  * Получение метрик A/B тестов
  */
+import { prisma } from "../../../utils/db";
+
 export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);

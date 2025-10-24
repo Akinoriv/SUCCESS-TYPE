@@ -2,6 +2,8 @@
  * POST /api/ab-test/assign
  * Назначение варианта пользователю для A/B тестирования
  */
+import { prisma } from "../../../utils/db";
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);

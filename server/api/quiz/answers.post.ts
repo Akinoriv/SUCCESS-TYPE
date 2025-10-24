@@ -2,6 +2,8 @@
  * POST /api/quiz/answers
  * Сохранение ответов пользователя на вопросы теста
  */
+import { prisma } from "../../../utils/db";
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);

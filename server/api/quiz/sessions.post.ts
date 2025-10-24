@@ -2,6 +2,8 @@
  * POST /api/quiz/sessions
  * Создание новой сессии прохождения теста
  */
+import { prisma } from "../../../utils/db";
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);

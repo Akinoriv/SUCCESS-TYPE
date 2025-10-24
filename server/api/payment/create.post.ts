@@ -2,6 +2,8 @@
  * POST /api/payment/create
  * Создание платежа через ЮКасса
  */
+import { prisma } from "../../../utils/db";
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);

@@ -2,6 +2,8 @@
  * POST /api/analytics/events
  * Логирование событий для аналитики
  */
+import { prisma } from "../../../utils/db";
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);

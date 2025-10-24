@@ -2,6 +2,8 @@
  * GET /api/ab-test/content/[id]
  * Получение контента варианта по slug
  */
+import { prisma } from "../../../../utils/db";
+
 export default defineEventHandler(async (event) => {
   try {
     const slug = getRouterParam(event, "id");
