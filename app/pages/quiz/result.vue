@@ -1,276 +1,386 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+  <div
+    class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-12"
+  >
     <div class="container mx-auto px-4">
-      <!-- Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">Твой тип личности</h1>
-        <p class="text-lg text-gray-600">Результат теста готов!</p>
+      <!-- Loading State -->
+      <div v-if="loading" class="max-w-4xl mx-auto text-center py-20">
+        <div
+          class="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto mb-6"
+        ></div>
+        <p class="text-gray-600 text-lg">Анализируем твои ответы...</p>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div class="text-6xl mb-4">⚠️</div>
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Что-то пошло не так
+          </h2>
+          <p class="text-gray-600 mb-6">{{ error }}</p>
+          <button
+            @click="retry"
+            class="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold"
+          >
+            Попробовать снова
+          </button>
+        </div>
       </div>
 
       <!-- Result Content -->
-      <div v-if="result" class="max-w-4xl mx-auto">
-        <!-- Result Card -->
-        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
-          <div class="text-center mb-6">
-            <div class="text-6xl mb-4">{{ result.emoji }}</div>
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">
-              {{ result.title }}
-            </h2>
-            <p class="text-lg text-gray-600">{{ result.description }}</p>
-          </div>
+      <div v-else-if="resultType" class="max-w-6xl mx-auto space-y-8">
+        <!-- Header with Type -->
+        <div class="text-center mb-8">
+          <div class="text-8xl mb-4">{{ getTypeEmoji(resultType) }}</div>
+          <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+            {{ getTypeTitle(resultType) }}
+          </h1>
+          <p class="text-2xl text-gray-600 mb-2">
+            {{ getTypeSubtitle(resultType) }}
+          </p>
+          <p class="text-lg text-gray-500">
+            {{ getTypeTagline(resultType) }}
+          </p>
+        </div>
 
-          <!-- Strengths -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">
-              🌟 Твои суперсилы:
-            </h3>
-            <ul class="space-y-2">
-              <li
-                v-for="strength in result.strengths"
-                :key="strength"
-                class="flex items-center"
-              >
-                <span class="text-green-500 mr-2">✓</span>
-                <span>{{ strength }}</span>
-              </li>
-            </ul>
-          </div>
+        <!-- 💎 Твоя суть -->
+        <div class="bg-white rounded-3xl shadow-xl p-8 md:p-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center">
+            💎 Твоя суть
+          </h2>
+          <div
+            class="prose prose-lg max-w-none text-gray-700 space-y-4"
+            v-html="getEssence(resultType)"
+          ></div>
+        </div>
 
-          <!-- Weaknesses -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">
-              ⚠️ Слабые стороны:
-            </h3>
-            <ul class="space-y-2">
-              <li
-                v-for="weakness in result.weaknesses"
-                :key="weakness"
-                class="flex items-center"
-              >
-                <span class="text-orange-500 mr-2">•</span>
-                <span>{{ weakness }}</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Recommendations -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">
-              💡 Рекомендации:
-            </h3>
-            <ul class="space-y-2">
-              <li
-                v-for="recommendation in result.recommendations"
-                :key="recommendation"
-                class="flex items-start"
-              >
-                <span class="text-blue-500 mr-2 mt-1">→</span>
-                <span>{{ recommendation }}</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Careers -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">
-              💼 Подходящие профессии:
-            </h3>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="career in result.careers"
-                :key="career"
-                class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
-              >
-                {{ career }}
-              </span>
+        <!-- 🌟 Твои суперсилы -->
+        <div
+          class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-3xl shadow-xl p-8 md:p-12"
+        >
+          <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center">
+            🌟 Твои суперсилы
+          </h2>
+          <div class="space-y-8">
+            <div
+              v-for="(power, index) in getSuperpowers(resultType)"
+              :key="index"
+              class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+            >
+              <h3 class="text-xl font-bold text-gray-900 mb-3">
+                {{ power.title }}
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                {{ power.description }}
+              </p>
             </div>
-          </div>
-
-          <!-- Income Info -->
-          <div class="bg-gray-50 rounded-lg p-4 mb-6">
-            <h4 class="font-semibold text-gray-900 mb-2">
-              💰 Потенциальный доход:
-            </h4>
-            <p class="text-gray-700">{{ result.income }}</p>
-            <p class="text-sm text-gray-500 mt-1">{{ result.timeline }}</p>
           </div>
         </div>
 
-        <!-- Extended Report Section (Placeholder) -->
+        <!-- 🚨 Твои слабые стороны -->
         <div
-          class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg shadow-lg p-8 mb-6"
+          class="bg-gradient-to-br from-orange-50 to-red-100 rounded-3xl shadow-xl p-8 md:p-12"
         >
-          <div class="text-center mb-6">
-            <div class="text-5xl mb-4">📚</div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-3">
-              Получить ещё больше результатов
-            </h3>
-            <p class="text-gray-700 mb-4">
-              Расширенный отчёт включает детальный анализ и персональные
-              рекомендации
-            </p>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4 flex items-center">
+            🚨 Твои слабые стороны
+          </h2>
+          <p class="text-gray-700 mb-8 text-lg">(и это нормально)</p>
+          <div class="space-y-8">
+            <div
+              v-for="(weakness, index) in getWeaknesses(resultType)"
+              :key="index"
+              class="bg-white rounded-2xl p-6 shadow-lg"
+            >
+              <h3 class="text-xl font-bold text-gray-900 mb-3">
+                {{ weakness.title }}
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                {{ weakness.description }}
+              </p>
+            </div>
           </div>
+        </div>
 
-          <!-- Placeholder Content Area -->
-          <div class="bg-white rounded-lg p-6 mb-6 max-h-96 overflow-y-auto">
-            <div class="prose prose-sm max-w-none">
-              <h4 class="text-xl font-semibold text-gray-900 mb-4">
-                В расширенном отчёте вы получите:
-              </h4>
+        <!-- 💪 Как усилить себя -->
+        <div
+          class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl shadow-xl p-8 md:p-12"
+        >
+          <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center">
+            💪 Как усилить себя
+          </h2>
+          <div class="space-y-8">
+            <div
+              v-for="(strategy, index) in getStrategies(resultType)"
+              :key="index"
+              class="bg-white rounded-2xl p-6 shadow-lg"
+            >
+              <h3 class="text-xl font-bold text-gray-900 mb-3">
+                {{ strategy.title }}
+              </h3>
+              <p class="text-gray-700 leading-relaxed whitespace-pre-line">
+                {{ strategy.description }}
+              </p>
+            </div>
+          </div>
+        </div>
 
-              <div class="space-y-4 text-gray-700">
-                <div class="flex items-start">
-                  <span class="text-green-500 mr-3 text-xl">✓</span>
-                  <div>
-                    <h5 class="font-semibold mb-1">
-                      Детальный анализ вашего типа личности
-                    </h5>
-                    <p class="text-sm">
-                      Углублённое понимание ваших сильных и слабых сторон с
-                      конкретными примерами из жизни
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex items-start">
-                  <span class="text-green-500 mr-3 text-xl">✓</span>
-                  <div>
-                    <h5 class="font-semibold mb-1">
-                      Персональный план развития
-                    </h5>
-                    <p class="text-sm">
-                      Пошаговая стратегия работы над собой с учётом вашего типа
-                      и текущей ситуации
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex items-start">
-                  <span class="text-green-500 mr-3 text-xl">✓</span>
-                  <div>
-                    <h5 class="font-semibold mb-1">
-                      Совместимость с другими типами
-                    </h5>
-                    <p class="text-sm">
-                      Как эффективно взаимодействовать с людьми разных типов в
-                      работе и жизни
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex items-start">
-                  <span class="text-green-500 mr-3 text-xl">✓</span>
-                  <div>
-                    <h5 class="font-semibold mb-1">Карьерные траектории</h5>
-                    <p class="text-sm">
-                      Детальный разбор профессий с анализом подходящих ниш и
-                      направлений развития
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex items-start">
-                  <span class="text-green-500 mr-3 text-xl">✓</span>
-                  <div>
-                    <h5 class="font-semibold mb-1">Стратегии монетизации</h5>
-                    <p class="text-sm">
-                      Конкретные способы заработка, которые максимально подходят
-                      вашему типу
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex items-start">
-                  <span class="text-green-500 mr-3 text-xl">✓</span>
-                  <div>
-                    <h5 class="font-semibold mb-1">Работа с ограничениями</h5>
-                    <p class="text-sm">
-                      Практические техники преодоления типичных для вашего типа
-                      сложностей
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex items-start">
-                  <span class="text-green-500 mr-3 text-xl">✓</span>
-                  <div>
-                    <h5 class="font-semibold mb-1">Примеры успешных людей</h5>
-                    <p class="text-sm">
-                      Истории известных личностей с вашим типом и их путь к
-                      успеху
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex items-start">
-                  <span class="text-green-500 mr-3 text-xl">✓</span>
-                  <div>
-                    <h5 class="font-semibold mb-1">Рекомендации по обучению</h5>
-                    <p class="text-sm">
-                      Курсы, книги и материалы, которые помогут вам развиваться
-                      эффективнее
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded"
+        <!-- 🎁 Что ты получил бесплатно -->
+        <div
+          class="bg-gradient-to-br from-purple-50 to-pink-100 rounded-3xl shadow-xl p-8 md:p-12 text-center"
+        >
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">
+            🎁 Что ты получил бесплатно
+          </h2>
+          <div class="space-y-3 max-w-2xl mx-auto text-left mb-8">
+            <div class="flex items-start">
+              <span class="text-green-500 text-xl mr-3">✅</span>
+              <span class="text-gray-700"
+                >Глубокое понимание своей природы</span
               >
-                <p class="text-sm text-gray-700">
-                  <strong>Примечание:</strong> Функция получения расширенного
-                  отчёта находится в разработке. Скоро вы сможете получить
-                  полный доступ ко всем материалам!
-                </p>
-              </div>
+            </div>
+            <div class="flex items-start">
+              <span class="text-green-500 text-xl mr-3">✅</span>
+              <span class="text-gray-700">Осознание своих суперсил</span>
+            </div>
+            <div class="flex items-start">
+              <span class="text-green-500 text-xl mr-3">✅</span>
+              <span class="text-gray-700"
+                >Понимание слабых сторон без чувства вины</span
+              >
+            </div>
+            <div class="flex items-start">
+              <span class="text-green-500 text-xl mr-3">✅</span>
+              <span class="text-gray-700"
+                >Пять конкретных стратегий для усиления себя</span
+              >
             </div>
           </div>
 
-          <!-- CTA Button (Disabled for now) -->
+          <div class="bg-white rounded-2xl p-6 max-w-2xl mx-auto mb-6">
+            <p class="text-lg text-gray-800 mb-4 font-medium">
+              Но это только начало.
+            </p>
+            <p class="text-gray-700 mb-2">
+              Теперь ты знаешь, <strong>КТО</strong> ты. Но остаётся главный
+              вопрос: <strong>ЧТО</strong> с этим делать дальше?
+            </p>
+            <ul class="text-left space-y-2 mt-4 text-gray-700">
+              <li>• {{ getMainQuestion1(resultType) }}</li>
+              <li>• {{ getMainQuestion2(resultType) }}</li>
+              <li>• {{ getMainQuestion3(resultType) }}</li>
+              <li>• {{ getMainQuestion4(resultType) }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 📊 Оцени результат -->
+        <div
+          v-if="!feedbackSubmitted"
+          class="bg-white rounded-3xl shadow-xl p-8 md:p-12"
+        >
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+            📊 Насколько точно описание?
+          </h2>
+          <p class="text-gray-600 text-center mb-8">
+            Помоги нам улучшить тест — оцени, насколько результаты соответствуют
+            реальности
+          </p>
+
+          <div class="flex justify-center gap-2 mb-6">
+            <button
+              v-for="rating in [1, 2, 3, 4, 5]"
+              :key="rating"
+              @click="selectedRating = rating"
+              :class="[
+                'w-16 h-16 rounded-xl font-bold text-xl transition-all',
+                selectedRating === rating
+                  ? 'bg-indigo-600 text-white shadow-lg scale-110'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+              ]"
+            >
+              {{ rating }}
+            </button>
+          </div>
+
+          <div class="text-center text-sm text-gray-500 mb-6">
+            1 = Совсем не похоже • 5 = Очень точно
+          </div>
+
+          <textarea
+            v-model="feedbackText"
+            placeholder="Опционально: расскажи, что было точным, а что нет (это поможет нам улучшить тест)"
+            class="w-full p-4 border border-gray-300 rounded-xl mb-6 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            rows="4"
+          ></textarea>
+
           <button
-            disabled
-            class="w-full bg-gray-400 text-white font-semibold py-4 px-8 rounded-lg text-lg cursor-not-allowed opacity-60"
+            @click="submitFeedback"
+            :disabled="!selectedRating || submittingFeedback"
+            :class="[
+              'w-full py-4 rounded-xl font-semibold text-lg transition-all',
+              selectedRating && !submittingFeedback
+                ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed',
+            ]"
           >
-            Скоро будет доступно
+            {{ submittingFeedback ? "Отправляем..." : "Отправить оценку" }}
+          </button>
+        </div>
+
+        <!-- Feedback Success -->
+        <div
+          v-else
+          class="bg-green-50 rounded-3xl shadow-xl p-8 text-center border-2 border-green-200"
+        >
+          <div class="text-6xl mb-4">🙏</div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">
+            Спасибо за обратную связь!
+          </h3>
+          <p class="text-gray-700">
+            Твоё мнение очень ценно и поможет нам улучшить тест для других
+            людей.
+          </p>
+        </div>
+
+        <!-- 🚀 Расширенная версия (временно бесплатно) -->
+        <div
+          class="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl shadow-xl p-8 md:p-12"
+        >
+          <div class="text-center mb-8">
+            <div
+              class="inline-block bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-bold text-sm mb-4"
+            >
+              🎁 ВРЕМЕННО БЕСПЛАТНО — ПОМОГИ ПРОТЕСТИРОВАТЬ
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">
+              🚀 Часть 2: ЧТО ДЕЛАТЬ?
+            </h2>
+            <p class="text-gray-700 text-lg mb-4">
+              Персональный план на 30 дней, стратегии заработка и построение
+              команды
+            </p>
+            <div
+              class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded text-left max-w-2xl mx-auto"
+            >
+              <p class="text-sm text-gray-700">
+                <strong>Важно:</strong> Эта часть в будущем станет платной
+                (990-1490₽), но сейчас доступна бесплатно для тестирования.
+                Пожалуйста, пройди и оставь обратную связь — это поможет сделать
+                продукт лучше!
+              </p>
+            </div>
+          </div>
+
+          <!-- Блоки с превью (всегда видны) -->
+          <div class="space-y-6 mb-8">
+            <!-- Блок 1: План на 30 дней -->
+            <div class="bg-white rounded-2xl p-8 shadow-lg relative">
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                📅 БЛОК 1: Персональный план на 30 дней для
+                {{ getTypeTitle(resultType) }}
+              </h3>
+              <div
+                :class="[
+                  'prose prose-lg max-w-none text-gray-700',
+                  !showFullReport ? 'max-h-24 overflow-hidden relative' : '',
+                ]"
+                v-html="
+                  showFullReport
+                    ? getPlan30Days(resultType)
+                    : getPreview(getPlan30Days(resultType))
+                "
+              ></div>
+              <!-- Gradient fade effect when preview -->
+              <div
+                v-if="!showFullReport"
+                class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent"
+              ></div>
+            </div>
+
+            <!-- Блок 2: Монетизация -->
+            <div class="bg-white rounded-2xl p-8 shadow-lg relative">
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                💰 БЛОК 2: Как начать зарабатывать больше
+              </h3>
+              <div
+                :class="[
+                  'prose prose-lg max-w-none text-gray-700',
+                  !showFullReport ? 'max-h-24 overflow-hidden relative' : '',
+                ]"
+                v-html="
+                  showFullReport
+                    ? getMonetization(resultType)
+                    : getPreview(getMonetization(resultType))
+                "
+              ></div>
+              <!-- Gradient fade effect when preview -->
+              <div
+                v-if="!showFullReport"
+                class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent"
+              ></div>
+            </div>
+
+            <!-- Блок 3: Команда -->
+            <div class="bg-white rounded-2xl p-8 shadow-lg relative">
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                👥 БЛОК 3: Твоя команда мечты
+              </h3>
+              <div
+                :class="[
+                  'prose prose-lg max-w-none text-gray-700',
+                  !showFullReport ? 'max-h-24 overflow-hidden relative' : '',
+                ]"
+                v-html="
+                  showFullReport
+                    ? getTeamBuilding(resultType)
+                    : getPreview(getTeamBuilding(resultType))
+                "
+              ></div>
+              <!-- Gradient fade effect when preview -->
+              <div
+                v-if="!showFullReport"
+                class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Кнопка получить полный отчёт -->
+          <button
+            v-if="!showFullReport"
+            @click="showFullReport = true"
+            class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-gray-900 font-bold py-6 px-8 rounded-2xl text-xl shadow-xl transition-all"
+          >
+            🔓 Получить полный отчёт
           </button>
         </div>
 
         <!-- Actions -->
-        <div class="text-center space-y-4">
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             @click="shareResult"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors shadow-lg"
           >
-            Поделиться результатом
+            📤 Поделиться результатом
           </button>
 
           <button
             @click="retakeQuiz"
-            class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            class="px-8 py-4 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors shadow-lg"
           >
-            Пройти тест заново
+            🔄 Пройти тест заново
           </button>
         </div>
-      </div>
 
-      <!-- Loading State -->
-      <div v-else-if="loading" class="text-center py-12">
+        <!-- Disclaimer -->
         <div
-          class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"
-        ></div>
-        <p class="text-gray-600">Загружаем результат...</p>
-      </div>
-
-      <!-- Error State -->
-      <div v-else-if="error" class="text-center py-12">
-        <div class="text-red-500 text-xl mb-4">⚠️</div>
-        <p class="text-gray-600 mb-4">{{ error }}</p>
-        <button
-          @click="retry"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          class="bg-gray-50 rounded-2xl p-6 text-center border border-gray-200"
         >
-          Попробовать снова
-        </button>
+          <p class="text-sm text-gray-600">
+            Напоминаем: этот тест — инструмент для самопознания, а не
+            медицинский или психологический диагноз.
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -279,69 +389,1065 @@
 <script setup>
 // Route
 const route = useRoute();
+const resultId = computed(() => route.query.id);
 
 // State
-const resultId = computed(() => route.query.id);
 const error = ref("");
+const resultType = ref(null);
+const loading = ref(true);
+const showFullReport = ref(false);
 
-// Load result data
-const {
-  data: result,
-  pending: loading,
-  error: fetchError,
-  refresh,
-} = await useLazyFetch(`/api/results/${resultId.value}`, {
-  key: `result-${resultId.value}`,
-  transform: (response) => {
-    if (!response.success) {
-      throw new Error(response.statusMessage || "Ошибка загрузки результата");
+// Feedback state
+const selectedRating = ref(null);
+const feedbackText = ref("");
+const feedbackSubmitted = ref(false);
+const submittingFeedback = ref(false);
+
+// Load result
+onMounted(async () => {
+  try {
+    const response = await $fetch(`/api/results/${resultId.value}`);
+
+    if (response.success) {
+      resultType.value = response.data.resultType;
+    } else {
+      error.value = "Не удалось загрузить результат";
     }
-
-    const resultData = response.data.resultData;
-    return {
-      id: response.data.id,
-      resultType: response.data.resultType,
-      ...resultData,
-    };
-  },
-});
-
-// Handle errors
-watch(fetchError, (err) => {
-  if (err) {
-    error.value = "Ошибка при загрузке результата";
+  } catch (err) {
     console.error("Error loading result:", err);
+    error.value = "Ошибка при загрузке результата";
+  } finally {
+    loading.value = false;
   }
 });
 
+// Type helpers
+const getTypeEmoji = (type) => {
+  const emojis = {
+    impulse: "⚡",
+    focus: "💎",
+    titan: "👑",
+    aether: "🌌",
+  };
+  return emojis[type] || "✨";
+};
+
+const getTypeTitle = (type) => {
+  const titles = {
+    impulse: "ИМПУЛЬС",
+    focus: "ФОКУС",
+    titan: "ТИТАН",
+    aether: "ЭФИР",
+  };
+  return titles[type] || "";
+};
+
+const getTypeSubtitle = (type) => {
+  const subtitles = {
+    impulse: "Живая молния успеха",
+    focus: "Лазерный луч точности",
+    titan: "Неостановимая сила",
+    aether: "Архитектор будущего",
+  };
+  return subtitles[type] || "";
+};
+
+const getTypeTagline = (type) => {
+  const taglines = {
+    impulse: "Высокая энергия • Широкий фокус",
+    focus: "Низкая энергия • Глубокий фокус",
+    titan: "Высокая энергия • Глубокий фокус",
+    aether: "Низкая энергия • Широкий фокус",
+  };
+  return taglines[type] || "";
+};
+
+// Content getters (will add full content from file)
+const getEssence = (type) => {
+  const essences = {
+    impulse: `
+      <p>Ты — чистая энергия в действии. Твоя сила в способности мгновенно загораться идеей и действовать, пока другие ещё думают "а стоит ли?". Ты уже сделал три шага и получил первые результаты. Ошибки? Ты их не боишься — для тебя это уроки, которые делают тебя быстрее и сильнее.</p>
+      <p>Твоя магия — это сочетание высокой энергии и молниеносной адаптации. Ты живёшь здесь и сейчас, превращая каждый момент в возможность. Это может быть запуск бизнеса, изучение языка, занятия спортом или любой другой проект — главное, что ты не боишься начинать.</p>
+      <p class="font-bold">Твой элемент — ⚡ МОЛНИЯ. Твоё время — ЗДЕСЬ И СЕЙЧАС.</p>
+    `,
+    focus: `
+      <p>Ты — мастер глубины и концентрации. Когда ты погружаешься в задачу, весь остальной мир перестаёт существовать. Ты видишь детали, которые другие пропускают. Твоя сила не в скорости, а в безупречном качестве того, что ты создаёшь.</p>
+      <p>Ты строишь не быстро, но надолго. Когда ты берёшься за что-то, это будет сделано идеально. Люди готовы ждать результата, потому что они знают — оно будет стоить этого ожидания.</p>
+      <p class="font-bold">Твой элемент — 💎 БРИЛЛИАНТ. Твоё время — НАСТОЙЧИВОСТЬ И ТЕРПЕНИЕ.</p>
+    `,
+    titan: `
+      <p>Ты — воплощение словосочетания "я могу всё". У тебя есть энергия Импульса И фокус Фокуса одновременно. Ты не просто достигаешь целей — ты устанавливаешь новые стандарты. Когда ты берёшься за что-то, остальные понимают: это будет сделано на 100%, и даже больше.</p>
+      <p>Твоя магия в уникальном сочетании: максимальная энергия плюс максимальный фокус. Ты можешь работать интенсивно часами, сохраняя качество и ясность ума. Это редкое качество, и ты знаешь его ценность.</p>
+      <p>Но есть важный момент: ты не бессмертен. Даже у Титанов есть предел. И это нужно учитывать.</p>
+      <p class="font-bold">Твой элемент — ⚔️ АЛМАЗНЫЙ МЕЧ. Твоё время — ВСЕГДА В ДВИЖЕНИИ.</p>
+    `,
+    aether: `
+      <p>Ты — человек, который видит то, чего не видят другие. Ты замечаешь тренды в тот момент, когда большинство ещё не осознали, что что-то меняется. Твоя сила не в скорости или выносливости — она в способности создавать концепции, которые меняют целые индустрии.</p>
+      <p>В мире, где большинство спешит, ты движешься в собственном ритме, создавая вещи, которые потом все копируют. Твоя магия — это сочетание глубокого видения и творческого гения. Ты думаешь не "как улучшить существующее", а "как переизобрести всё".</p>
+      <p>Но это требует цены. Тебе нужна дисциплина, чтобы твои идеи воплощались. Без неё ты рискуешь остаться в облаках, и тревога с апатией начнут тебя накрывать.</p>
+      <p class="font-bold">Твой элемент — 🌌 ЭФИР. Твоё время — ВНЕ ВРЕМЕНИ.</p>
+    `,
+  };
+  return essences[type] || "";
+};
+
+// Superpowers
+const getSuperpowers = (type) => {
+  const powers = {
+    impulse: [
+      {
+        title: "Скорость реакции",
+        description:
+          "Видишь возможность — сразу действуешь. Ты живёшь принципом: лучше сделать и скорректировать, чем бесконечно планировать. Пока другие изучают рынок и собирают фокус-группы, ты уже выпустил первую версию и получил реальную обратную связь.",
+      },
+      {
+        title: "Генератор идей",
+        description:
+          "У тебя в голове постоянно рождаются новые проекты и решения. Там, где другие видят тупик, ты видишь пять разных путей. Креативный кризис? Для тебя это просто обычный понедельник. Ты видишь связи между вещами, которые другим кажутся несвязанными.",
+      },
+      {
+        title: "Антихрупкость",
+        description:
+          "Чем больше хаоса вокруг, тем лучше ты себя чувствуешь. Кризисы, неожиданности, изменения планов — это твоя среда для роста. Когда другие паникуют, ты расцветаешь и находишь нестандартные решения.",
+      },
+      {
+        title: "Заразительная энергия",
+        description:
+          "Люди тянутся к тебе, потому что твоя энергия заряжает. Рядом с тобой они начинают верить, что всё возможно. Ты можешь вдохновить кого угодно на что угодно — и это создаёт невероятно мощные союзы, когда ты объединяешься с теми, кто умеет доводить дела до конца.",
+      },
+      {
+        title: "Быстрое обучение на практике",
+        description:
+          "Длинные инструкции? Не для тебя. Ты предпочитаешь сразу погружаться в процесс. Твой метод — практика, эксперименты, иногда ошибки, но всегда быстрое понимание того, как всё работает. Этот живой опыт остаётся с тобой навсегда.",
+      },
+    ],
+    focus: [
+      {
+        title: "Лазерная концентрация",
+        description:
+          "Ты можешь работать над одной задачей часами, полностью погружаясь в процесс. Когда ты в фокусе, тебя не отвлекают звонки, сообщения, суета вокруг. Эта способность к глубокому погружению — твоё главное конкурентное преимущество. Для многих работ такая концентрация просто неоценима.",
+      },
+      {
+        title: "Качество на уровне мастерства",
+        description:
+          "Ты делаешь не просто хорошо — ты делаешь идеально. Каждая деталь продумана, каждый элемент на своём месте. Люди замечают эту разницу. Твои работы узнают по качеству, и это становится твоей визиткой.",
+      },
+      {
+        title: "Экспертность, которая ценится",
+        description:
+          "Ты не просто изучаешь тему — ты становишься в ней авторитетом. Люди приходят именно к тебе, потому что знают: ты знаешь глубже всех. Эта репутация даёт стабильный доход и возможность выбирать клиентов.",
+      },
+      {
+        title: "Стратегическое мышление",
+        description:
+          "Ты видишь долгосрочные последствия каждого решения. Ты не гонишься за быстрой прибылью — ты строишь капитал. Это делает тебя ценным советником для тех, кто хочет думать на годы вперёд.",
+      },
+      {
+        title: "Надёжность, на которую можно положиться",
+        description:
+          "Если ты пообещал — это будет сделано, и сделано качественно. На тебя можно положиться, и это редкое качество делает тебя незаменимым в любой команде.",
+      },
+    ],
+    titan: [
+      {
+        title: "Безграничная производительность",
+        description:
+          'Ты можешь работать 10-12+ часов с полной отдачей, когда это нужно. То, что для других "героическое усилие", для тебя — обычный день. Ты не просто продуктивен — ты гиперпродуктивен. И это даёт тебе фору над конкурентами.',
+      },
+      {
+        title: "Системное мышление плюс исполнение",
+        description:
+          "Ты не только видишь большую картину, но и можешь её реализовать. Ты создаёшь стратегию, и одновременно воплощаешь её. Это даёт тебе мощное преимущество: ты не зависишь от других в реализации своего видения.",
+      },
+      {
+        title: "Магнит для талантов",
+        description:
+          "Сильные люди хотят работать с тобой. Они понимают: рядом с тобой они будут расти быстрее и достигнут большего. Твоя энергия заражает, твой успех вдохновляет.",
+      },
+      {
+        title: "Антивыгорание в стрессе",
+        description:
+          "Чем сложнее ситуация, тем больше в тебе просыпается сил. Критические моменты — это твоя стихия. Когда другие паникуют, ты находишь решение и действуешь.",
+      },
+      {
+        title: "Мультипликатор результатов",
+        description:
+          'Процессы, в которые ты вложишь внимание, начинают работать в 2-5 раз эффективнее. Это не магия — это системное мышление, прикладываемое к практике. Люди видят разницу и просят тебя "поднять им эффективность".',
+      },
+    ],
+    aether: [
+      {
+        title: "Видение паттернов, которое меняет стоимость",
+        description:
+          "Ты замечаешь тренды раньше всех. Видишь связи между событиями, которые другие считают несвязанными. Эта способность — огромный капитал. Миллиардеры часто начинают именно с такого видения. Твоя задача — научиться им пользоваться.",
+      },
+      {
+        title: "Генератор прорывных идей",
+        description:
+          "Твои инсайты могут изменить целые индустрии. Ты не улучшаешь — ты переизобретаешь. Когда ты видишь проблему, ты видишь и её решение, которое никому не приходило в голову.",
+      },
+      {
+        title: "Мастер синтеза знаний",
+        description:
+          "Ты берёшь информацию из разных областей — психологии, физики, истории, бизнеса — и создаёшь что-то принципиально новое. Это особый вид творчества, который невозможно научить.",
+      },
+      {
+        title: "Интуитивная мудрость",
+        description:
+          "Ты чувствуешь правильные решения на уровне, который рациональный анализ не может объяснить. Потом, спустя время, оказывается, что ты был прав. Люди удивляются, как ты это узнал.",
+      },
+      {
+        title: "Работа через людей",
+        description:
+          "Ты не просто создаёшь идеи — ты умеешь находить нужных исполнителей. Ты — режиссер, который видит, кого и когда привлечь. Это редкий дар, и он ценится высоко.",
+      },
+    ],
+  };
+  return powers[type] || [];
+};
+
+// Weaknesses
+const getWeaknesses = (type) => {
+  const weaknesses = {
+    impulse: [
+      {
+        title: "Синдром бесконечно открытых проектов",
+        description:
+          "Ты загораешься новыми идеями так быстро, что начинаешь много проектов одновременно. Может быть, это запись в спортзал, изучение языка, новый бизнес или творческое хобби — неважно. Главное, что через какое-то время многие из них остаются на 80% готовности и постепенно забываются. Это происходит не потому, что ты безответственный. Просто новая идея кажется ярче, чем рутина завершения старой.",
+      },
+      {
+        title: "Импульсивные решения",
+        description:
+          "Твоя скорость иногда играет против тебя. Ты можешь влететь в проект без анализа просто потому, что идея показалась захватывающей. Потом приходится разгребать последствия — но даже это учит, просто урок обходится дороже.",
+      },
+      {
+        title: "Хаотичность",
+        description:
+          "Системы и планирование кажутся тебе тюрьмой для креативности. Календари? Записываешь, но забываешь проверить. Списки дел? Делаешь, но потом занимаешься тем, что кажется важным в моменте. Эта свобода даёт драйв, но иногда важные вещи проваливаются в трещины.",
+      },
+      {
+        title: "Нетерпеливость",
+        description:
+          "Если не видишь быстрого прогресса, интерес может угаснуть. Долгосрочные проекты, требующие месяцев терпения, вызывают внутреннее сопротивление. А ведь самые большие победы часто требуют времени.",
+      },
+      {
+        title: "Переоценка своих сил",
+        description:
+          "В моменте пиковой энергии кажется, что ты можешь всё. И ты берёшь больше, чем реально способен переварить. Потом приходит откат — усталость, выгорание. Ты не всегда учитываешь циклы своей энергии.",
+      },
+    ],
+    focus: [
+      {
+        title: "Паралич анализа",
+        description:
+          'Ты можешь месяцами изучать вопрос, прежде чем начать действовать. "Мне нужно ещё немного разобраться, прочитать ещё одну книгу, посмотреть один видеокурс". Это стремление к полноте знаний часто блокирует первый шаг, и проекты остаются в стадии "почти готово к запуску".',
+      },
+      {
+        title: "Медленный старт",
+        description:
+          "Ты готовишься долго, но когда ты наконец запускаешься — ты идёшь как танк. Проблема в том, что пока ты готовишься, другие уже начали, получили обратную связь от клиентов и переделали продукт второй раз. Скорость выхода на рынок иногда важнее совершенства.",
+      },
+      {
+        title: "Быстрое истощение от рутины",
+        description:
+          "Тебе нужно больше времени на восстановление. Многозадачность быстро истощает, и тебе сложно работать в бешеном темпе долгое время. Это не лень — это просто твоя природа.",
+      },
+      {
+        title: "Страх перед ошибками и неудачами",
+        description:
+          "Ты избегаешь рисков, потому что боишься провала. Это мешает пробовать новое, экспериментировать, искать нестандартные решения. Иногда лучше попробовать рискованный вариант, чем оставаться в привычной зоне комфорта.",
+      },
+      {
+        title: "Перфекционизм, который убивает рентабельность",
+        description:
+          "Ты можешь потратить 100 часов на то, что можно было сделать за 20. Ты улучшаешь мелочи, которые никто не заметит, тратишь время на детали, которые не влияют на результат. Это отличное качество, но иногда оно ведёт к тому, что хороший продукт так и не выходит на рынок.",
+      },
+    ],
+    titan: [
+      {
+        title: "Риск выгорания — реальная угроза",
+        description:
+          'Это парадокс: ты чувствуешь усталость позже других, поэтому можешь "сжечь" себя, не заметив этого. Ты работаешь как танк, игнорируя предупреждающие сигналы. И потом вдруг может упасть как дерево — полное выгорание, из которого восстанавливаются долго. Это не теория. Это реальность для многих Титанов.',
+      },
+      {
+        title: "Перфекционизм в масштабе",
+        description:
+          'Ты хочешь контролировать всё. На старте это работает и даёт тебе преимущество. Но когда бизнес растёт, ты становишься узким местом. Ты не можешь делегировать, потому что никто "не делает как ты", и ты рискуешь остановить рост.',
+      },
+      {
+        title: "Нетерпимость к людям, которые медленнее тебя",
+        description:
+          'Тебе сложно работать с людьми, которые не могут идти в твоём темпе. Ты видишь их как "тормозов" и это создаёт напряжение в команде. Но не все могут быть Титанами, и это нормально.',
+      },
+      {
+        title: "Трудоголизм как неосознанный выбор",
+        description:
+          "Ты забываешь про отдых, личную жизнь, здоровье. Для тебя работа — это не просто работа, это твоя жизнь. Но без баланса даже сильный организм даёт сбой.",
+      },
+      {
+        title: "Изоляция на вершине",
+        description:
+          "Мало кто может идти в твоём темпе. Ты можешь ощущать одиночество, даже окруженный людьми. Они восхищаются тобой, но не понимают. А ты не находишь того, с кем можно действительно поговорить на равных.",
+      },
+    ],
+    aether: [
+      {
+        title: "Низкая исполнительность в деталях",
+        description:
+          "Тебе сложно воплощать идеи самому. Ты легко теряешься в деталях и рутине, которые для других — естественный процесс, а для тебя — мука. Ты видишь большую картину, но дьявол в деталях не твой враг — это просто не твоё.",
+      },
+      {
+        title: "Прокрастинация реализации",
+        description:
+          "У тебя в голове 100 идей, но реализовано 2. Ты откладываешь даже простые дела, потому что ум занят чем-то большим. Потом наступает момент, когда нужно что-то реально запустить — и здесь начинается борьба.",
+      },
+      {
+        title: "Рассеянность в деталях",
+        description:
+          "Ты теряешься в своих мыслях и пропускаешь важные детали реальности. Ты можешь забыть встречу, потому что был в процессе, или упустить важный момент, потому что был на другом уровне абстракции.",
+      },
+      {
+        title: "Низкая энергия для активной деятельности",
+        description:
+          'Ты быстро устаёшь от социального взаимодействия, от многозадачности, от необходимости "включаться" в мир. Тебе нужно много времени на восстановление. Это не лень — это просто твоя энергетика.',
+      },
+      {
+        title: "Тревога и апатия как ловушки",
+        description:
+          'Без дисциплины и структуры ты можешь погружаться в тревожность ("я ничего не делаю") или апатию ("зачем это всё?"). Эти состояния — сигнал, что пора создавать минимальную систему. Дисциплина здесь не враг — это спасение.',
+      },
+    ],
+  };
+  return weaknesses[type] || [];
+};
+
+// Strategies
+const getStrategies = (type) => {
+  const strategies = {
+    impulse: [
+      {
+        title: 'Система "1-3-5"',
+        description:
+          "Один основной проект — твой якорь, что-то стабильное.\nТри активных эксперимента — здесь ты даёшь волю любви к новому.\nПять идей в бэклоге — записываешь, но пока не трогаешь.\nЭто даёт разнообразие, но защищает от перегрузки.",
+      },
+      {
+        title: 'Найди своего "Финишера"',
+        description:
+          "Ты гениален в запуске, но можешь быть слабее в завершении. Найди партнёра или помощника, который обожает доводить дела до конца. Вместе вы создадите то, что не под силу каждому по отдельности. Твоя энергия + чужая системность = мощный союз.",
+      },
+      {
+        title: 'Техника "Спринт-Марафон"',
+        description:
+          "Твоя энергия работает волнами. Используй это! Работай блоками по 25-45 минут, потом короткий перерыв с наградой. Это соответствует твоей природе и позволяет выжимать максимум без истощения.",
+      },
+      {
+        title: "Энергетические ритуалы",
+        description:
+          "Создай систему перезагрузки: спорт для сброса энергии, медитация для успокоения, прогулки для генерации идей. Это помогает управлять энергией сознательно.",
+      },
+      {
+        title: 'Правило "Якорных проектов"',
+        description:
+          "Имей одно-два дела, которые приносят стабильность. Это позволяет экспериментировать без риска полного краха. Когда есть подушка безопасности, можно позволить себе смелые эксперименты.",
+      },
+    ],
+    focus: [
+      {
+        title: 'Правило "80% готовности"',
+        description:
+          "Это может быть сложно, но стоит пробовать: если решение проработано на 80% — действуй. Выпусти MVP, покажи людям, получи обратную связь. Оставшиеся 20% доработаешь потом, на основе того, что реально нужно.",
+      },
+      {
+        title: "Энергетический банк",
+        description:
+          "Твоя энергия не бесконечна. Защищай её: 8+ часов сна, правильное питание, прогулки на свежем воздухе каждый день. Это не лень — это инвестиция в продуктивность.",
+      },
+      {
+        title: 'Принцип "Батарейки"',
+        description:
+          "Найди свои 3-4 часа максимальной концентрации в день (обычно это утро или ночь) и защищай это время от всех. Делай самую важную работу в эти часы, рутину — когда энергия ниже.",
+      },
+      {
+        title: 'Техника "Быстрого прототипирования"',
+        description:
+          "Создай версию 1.0 за неделю, даже если она не совершенна. Покажи реальным людям. Их обратная связь дороже твоих предположений, и часто оказывается, что волноваться было не о чем.",
+      },
+      {
+        title: "Дедлайны как спасение",
+        description:
+          "Установи внешние обязательства: публичные обещания, партнеры по ответственности, предоплата от клиентов. Внешнее давление иногда помогает преодолеть собственный перфекционизм.",
+      },
+    ],
+    titan: [
+      {
+        title: "Системы сильнее героев",
+        description:
+          "Строй процессы, которые работают без тебя. Это не значит, что ты становишься менее ценен. Это значит, что ты становишься ещё более ценен, потому что можешь запустить несколько проектов вместо одного.",
+      },
+      {
+        title: 'Принцип "20/80 делегирования"',
+        description:
+          "20% дел делаешь только ты — то, что требует твоего уникального видения и решений.\n80% делегируешь с правом на ошибку. Люди должны иметь право ошибаться, иначе они никогда не вырастут.",
+      },
+      {
+        title: "Обязательная перезагрузка",
+        description:
+          "Это не опция. Это необходимость. Два дня в месяц — полное отключение от работы. Один отпуск в квартал — не отвечаешь на звонки, не проверяешь почту. Это не слабость. Это инвестиция в долгосрочность.",
+      },
+      {
+        title: "Развивай эмпатию к разным темпам работы",
+        description:
+          "Помни: не все могут работать в твоём темпе. И это не значит, что они плохие. Создавай разные стандарты для разных людей. То, что естественно для тебя, может быть героическим усилием для других.",
+      },
+      {
+        title: "Баланс контроля",
+        description:
+          'Определи 20% дел, которые делаешь только сам. Остальное — доверяй команде. Это сложнее всего, потому что ты видишь "правильный" способ. Но позволить людям делать по-своему — это путь к масштабированию.',
+      },
+    ],
+    aether: [
+      {
+        title: "Найди команду, которая воплощает",
+        description:
+          "Партнер-Титан для управления и реализации, Импульсы для быстрого тестирования идей, Фокусы для проработки деталей. Ты видишь, они делают. Это мощный союз.",
+      },
+      {
+        title: 'Система "Банк идей"',
+        description:
+          "Записывай ВСЕ идеи — это избавляет от страха упустить. Раз в месяц выбирай 1-2 самые сильные. Только их реализовывай. Остальное ждёт своего часа. Это даёт разрешение не делать всё сразу.",
+      },
+      {
+        title: "Создавай интеллектуальные продукты",
+        description:
+          "Твоя прибыль — в интеллектуальной собственности. Курсы, консалтинг, книги, методологии. Один раз создал — продаёшь бесконечно. Это соответствует твоей природе.",
+      },
+      {
+        title: "Принцип архитектора",
+        description:
+          "Ты создаёшь чертежи, другие строят. Фокусируйся на концепциях, видении, стратегии. Деталями занимаются люди, которые в них нуждаются. Это разделение труда, а не провал.",
+      },
+      {
+        title: "Минимальные системы исполнения",
+        description:
+          "Не нужна идеальная система. Нужна система, которая работает. Чек-листы, автоматизация, аутсорсинг рутины. Цель — минимизировать трение между идеей и её воплощением.",
+      },
+    ],
+  };
+  return strategies[type] || [];
+};
+
+// Main questions
+const getMainQuestion1 = (type) => {
+  const questions = {
+    impulse: "Как превратить эту энергию в конкретные результаты?",
+    focus: "Как превратить твою глубину в доход?",
+    titan: "Как масштабировать без того, чтобы стать узким местом?",
+    aether: "Как превратить видение в конкретный доход?",
+  };
+  return questions[type] || "";
+};
+
+const getMainQuestion2 = (type) => {
+  const questions = {
+    impulse: "Как зарабатывать больше, используя свою природу?",
+    focus: "Как преодолеть паралич анализа?",
+    titan: "Как построить команду, которая усилит тебя?",
+    aether: "Как создать систему, которая воплощает твои идеи без тебя?",
+  };
+  return questions[type] || "";
+};
+
+const getMainQuestion3 = (type) => {
+  const questions = {
+    impulse: "Как построить команду, которая дополнит твои слабости?",
+    focus: "Как создать систему, которая принуждает тебя к действию?",
+    titan: "Как зарабатывать больше, работая меньше?",
+    aether: "Как преодолеть апатию и тревогу?",
+  };
+  return questions[type] || "";
+};
+
+const getMainQuestion4 = (type) => {
+  const questions = {
+    impulse: "Как создать систему, которая работает ИМЕННО для Импульса?",
+    focus: "Как заработать больше, не жертвуя качеством?",
+    titan: "Как избежать выгорания и остаться на вершине надолго?",
+    aether: "Как найти и собрать команду, которая тебя поймёт?",
+  };
+  return questions[type] || "";
+};
+
+// Premium content placeholder (will be filled with actual content from file)
+const getPreview = (html) => {
+  // Безопасно извлекаем текст из HTML (работает и на клиенте, и на сервере)
+  let text = html;
+
+  // Удаляем HTML теги
+  text = text.replace(/<[^>]*>/g, " ");
+  // Удаляем множественные пробелы
+  text = text.replace(/\s+/g, " ").trim();
+
+  // Находим первые 2 предложения
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+  const preview = sentences.slice(0, 2).join(" ");
+
+  return `<p>${preview}</p>`;
+};
+
+const getPlan30Days = (type) => {
+  const plans = {
+    impulse: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: от энергии к результату</h3>
+      <p class="mb-4">Тебе не нужно 30 дней. Тебе нужно 12-15 часов чистого времени, разбросанных по месяцу между приступами энергии. Твой план — это не календарь с ежедневными задачами. Это три списка под твои состояния: когда мотивация на пике, когда она вернулась, когда её нет совсем.</p>
+      
+      <p class="mb-4"><strong>Почему именно тебе это подходит:</strong> Другие работают стабильно каждый день. Ты работаешь волнами — и это твоя сила, а не слабость. В моменты пика ты делаешь за день больше, чем другие за неделю. Проблема в том, что без системы ты теряешь результаты этих приступов. Этот план создан под твою природу.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">СПИСОК 1: Делай прямо сейчас (когда приступ мотивации)</h4>
+      <p class="mb-3"><strong>Почему именно тебе это критично:</strong> Ты на пике энергии прямо сейчас. Через час-два мотивация может уйти. Поэтому делай максимум СРАЗУ, пока огонь горит.</p>
+      
+      <p class="mb-3"><strong>Задача 1: Энергетический аудит (30 минут).</strong> Открой заметки в телефоне. Выпиши ответы: какие три дела заряжают энергией? После каких занятий прилив сил? Какие люди вдохновляют? Когда больше всего энергии? Что делаешь, когда весело и легко? Это твои "энергетические якоря" — делай их чаще.</p>
+      
+      <p class="mb-3"><strong>Задача 2: Чистка проектов (60 минут).</strong> Выпиши все незавершённые дела — проекты, идеи, курсы. Честно ответь по каждому: реально доделаю (в "Активные"), хочу но не сейчас (в "Заморозка"), не хочу совсем (в "Удалить"). Активных должно быть максимум три. Остальное закрой без вины — это нормально для твоего типа.</p>
+      
+      <p class="mb-3"><strong>Твоё преимущество:</strong> ты единственный тип, который может запустить три проекта одновременно и держать их в голове. Но больше трёх — и ты теряешь фокус.</p>
+      
+      <p class="mb-3"><strong>Задача 3: Создай систему "1-3-5" (60 минут).</strong> Выбери один "якорный проект" — дело, которое приносит стабильный доход. Выбери три эксперимента — идеи на ближайший месяц. Создай backlog — все остальные идеи записываешь туда, не трогаешь, пока не закроешь один из активных.</p>
+      
+      <p class="mb-3"><strong>Задача 4: Найди "финишера" (45 минут).</strong> Открой freelance.ru или fl.ru прямо сейчас. Найди фрилансера для рутины. Делегируй 1-3 простые задачи на пробу. Или настрой ИИ-помощников: ChatGPT для текстов, Zapier для автоматизации, Buffer для автопостинга. Ты генерируешь идеи, ИИ и люди доводят до конца.</p>
+      
+      <p class="mb-3"><strong>Результат к концу приступа:</strong> Свобода от чувства вины, фокус на трёх делах, система делегирования запущена.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">СПИСОК 2: Следующий приступ энергии (через 3-7 дней)</h4>
+      <p class="mb-3"><strong>Почему именно тебе это важно:</strong> Мотивация вернулась. Не трать её на рутину — используй для запуска новых проектов.</p>
+      
+      <p class="mb-3"><strong>Задача 5: Найди спортивный ритуал (1 час).</strong> Импульсам нужно сбрасывать избыток энергии. Попробуй три разных активности за неделю: бег, бокс, танцы, велосипед, скалодром. Выбери то, что не надоедает. Это не про здоровье — это про управление энергией.</p>
+      
+      <p class="mb-3"><strong>Задача 6: Запусти эксперименты (2-3 часа).</strong> Помнишь три эксперимента? Настало время. Для каждого определи минимальное действие для старта. Сделай его прямо сейчас, не планируй. Первый пост, звонок клиенту, покупка домена. Проекты запущены — можешь тестировать.</p>
+      
+      <p class="mb-3"><strong>Твоё преимущество:</strong> пока другие планируют и готовятся, ты уже запустил и получил первую обратную связь. Скорость старта — твоя суперсила.</p>
+      
+      <p class="mb-3"><strong>Задача 7: Создай "банк наград" (30 минут).</strong> Выпиши 10-15 вещей, которые быстро заряжают: звонок другу, музыка, прогулка, танцы, перекус. Используй после каждого часа работы или когда чувствуешь спад энергии.</p>
+      
+      <p class="mb-3"><strong>Результат к концу приступа:</strong> Эксперименты запущены, система восстановления энергии работает.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">СПИСОК 3: Режим "дисциплины" (когда мотивации нет)</h4>
+      <p class="mb-3"><strong>Почему именно тебе это сложнее всех:</strong> Дисциплина — твоя слабая сторона. Но иногда она нужна, чтобы не потерять результаты приступов.</p>
+      
+      <p class="mb-3"><strong>Микро-задачи по 5-10 минут.</strong> Утро: проверь якорный проект, сделай одно самое мелкое действие. День: помодоро 25 минут на рутину, награда после. Вечер: запиши 1-3 идеи за день. Всё.</p>
+      
+      <p class="mb-3"><strong>Лайфхак "Нулевой день":</strong> если совсем нет сил — ничего не делай по работе. Но сходи на прогулку, позвони другу, займись спортом, посмотри что-то вдохновляющее. Мотивация вернётся быстрее, чем если будешь себя насиловать.</p>
+      
+      <p class="mb-3"><strong>Результат к концу месяца:</strong> Ты умеешь ловить волны энергии, делать максимум в моменты мотивации, не винить себя за "простой". Ты работаешь волнами — и это нормально.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">🎁 ЧТО ТЫ ПОЛУЧИШЬ</h4>
+      <p>Знаешь свои источники энергии. Сфокусирован на одном главном плюс три эксперимента. Избавился от чувства вины за "недоделанное". Начал делегировать людям и ИИ. Умеешь работать даже без мотивации.</p>
+    `,
+    focus: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: от глубины к мастерству</h3>
+      <p class="mb-4">Твой путь — это путь мастера. Ты строишь не быстро, но надолго. Когда другие уже запустили пятый проект на 80% готовности, ты доводишь первый до совершенства. И это не недостаток — это твоя стратегия выживания в мире, где все торопятся.</p>
+      
+      <p class="mb-4"><strong>Почему именно тебе это подходит:</strong> Ты единственный тип, который может работать над одной задачей часами без потери концентрации. Другие отвлекаются, теряют фокус, переключаются. Ты погружаешься так глубоко, что весь мир перестаёт существовать. Это твоя суперсила — лазерная концентрация.</p>
+      
+      <p class="mb-4">Твой план на 30 дней построен с учётом твоей природы: небольшие, но глубокие шаги, защита времени для концентрации, правило 80% готовности. Без давления, с пониманием.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 1: Стратегический аудит и фундамент</h4>
+      <p class="mb-3"><strong>Почему именно тебе это критично:</strong> Другие начинают с действия и корректируют на ходу. Ты начинаешь с глубокого понимания, и это даёт тебе преимущество — ты редко ошибаешься в выборе направления. Но без чёткого фундамента ты рискуешь уйти в бесконечный анализ.</p>
+      
+      <p class="mb-3">В первые два дня определи амбициозную цель. Выдели 2-3 часа без отвлечений (выключи уведомления, закройся). Ответь на вопросы: какой я хочу видеть свою жизнь через год? Через три? Что действительно важно для меня, а не для окружающих? Сформулируй одну главную цель на 30 дней.</p>
+      
+      <p class="mb-3"><strong>Твоё преимущество:</strong> ты видишь долгосрочные последствия каждого решения. Используй это. Твоя цель должна быть не просто "запустить проект", а "создать фундамент для чего-то большего".</p>
+      
+      <p class="mb-3">На третий-четвёртый день проведи аудит ресурсов. Запиши все задачи за последнюю неделю. Раздели на категории: стратегические (только ты), важные но делегируемые, рутина. Проведи энергетический аудит: когда у тебя пик энергии? После каких задач прилив сил? Что истощает? Ты восстанавливаешься медленнее других — это важно учитывать.</p>
+      
+      <p class="mb-3">На пятый-седьмой день создай систему управления энергией. Определи 3-4 часа "золотого времени" — когда концентрация максимальна. Защити это время от всех. Создай систему восстановления: один полный выходной в неделю обязательно, 15-минутные перерывы каждые 90 минут, вечерний ритуал отключения.</p>
+      
+      <p class="mb-3"><strong>Результат к концу недели:</strong> Чёткая цель, понимание ресурсов, защищённое время для глубокой работы.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 2: Запуск систем и преодоление паралича анализа</h4>
+      <p class="mb-3"><strong>Почему именно тебе это сложнее всех:</strong> Ты склонен анализировать до бесконечности. "Мне нужно ещё немного разобраться, прочитать ещё одну книгу". Это твоя ловушка. Правило 80% готовности создано специально для тебя: если решение проработано на 80% — действуй. Остальное доработаешь по ходу.</p>
+      
+      <p class="mb-3">Построй дорожную карту. Раздели главную цель на четыре этапа (по одному на неделю). Каждый этап — на конкретные задачи. Определи KPI: как поймёшь, что достиг? Распредели ответственность: что делаешь только ты, что можно делегировать.</p>
+      
+      <p class="mb-3">Запусти систему делегирования. Определи, что делегировать: вся рутина, техническая реализация (если не твоё), коммуникация по шаблонам. Найди или назначь исполнителей. Создай систему контроля: еженедельные отчёты, критические KPI, регулярные созвоны раз в неделю.</p>
+      
+      <p class="mb-3"><strong>Твоё преимущество:</strong> ты умеешь создавать детальные инструкции лучше всех. То, что другим кажется скучным, тебе даётся естественно. Используй это — создавай чёткие процессы, и команда будет делать так, как ты хочешь.</p>
+      
+      <p class="mb-3"><strong>Результат к концу недели:</strong> Готовая дорожная карта, система делегирования, первые исполнители в процессе найма.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 3: Глубокая работа и оптимизация</h4>
+      <p class="mb-3"><strong>Почему именно тебе это даётся лучше других:</strong> Пока другие суетятся и переключаются между задачами, ты работаешь в режиме глубокой концентрации. Это даёт тебе качество, которого никто не может повторить. Но важно: не уходи в перфекционизм до потери рентабельности.</p>
+      
+      <p class="mb-3">Запусти ключевые инициативы. Используй "золотое время" энергии. Работай блоками по 90 минут с перерывами 15 минут. Фокусируйся на том, что двигает проект. Ежедневный контроль: утром проверь отчёты команды, вечером оцени прогресс. Работай с блокерами: что мешает движению? Какие решения нужны только от тебя?</p>
+      
+      <p class="mb-3">Оптимизируй и автоматизируй. Проанализируй узкие места: где процессы тормозят? Что повторяется регулярно? Внедри автоматизацию: Zapier для связок, CRM для клиентов, шаблоны для писем. Создай стандарты отчётности, настрой дашборды для KPI.</p>
+      
+      <p class="mb-3"><strong>Твоё преимущество:</strong> ты видишь детали, которые другие пропускают. Ты знаешь, где система даёт сбой. Эта внимательность к деталям — твоё конкурентное преимущество.</p>
+      
+      <p class="mb-3"><strong>Результат к концу недели:</strong> Проект в активной фазе, процессы оптимизированы, ты тратишь меньше времени на рутину.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 4: Анализ и подготовка к следующему витку</h4>
+      <p class="mb-3"><strong>Почему именно тебе это важно:</strong> Ты умеешь анализировать глубже других. Ты видишь не просто "что сработало", а "почему сработало" и "как это улучшить". Это позволяет тебе расти не хаотично, а системно.</p>
+      
+      <p class="mb-3">Проведи глубокий анализ результатов. Насколько близок к цели? Какие KPI выполнены? Что пошло не по плану и почему? Что сработало лучше всего? Собери обратную связь от команды: что у них работает, какая поддержка нужна, как улучшить процессы.</p>
+      
+      <p class="mb-3">Спланируй масштабирование. Какая цель на следующий месяц? Что нужно, чтобы её достичь? Кого ещё нужно нанять? Какие процессы готовы к масштабу?</p>
+      
+      <p class="mb-3">Затем возьми 2 полных дня отдыха без работы. Это не слабость. Ты восстанавливаешься медленнее других — это особенность твоей энергетики. Без отдыха ты потеряешь качество, которое является твоей силой.</p>
+      
+      <p class="mb-3"><strong>Результат к концу месяца:</strong> Работающая система, команда, понимание следующих шагов, защищённое время для восстановления.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">🎁 ЧТО ТЫ ПОЛУЧИШЬ</h4>
+      <p>Чёткую цель с глубоким пониманием. Систему управления энергией, которая соответствует твоему темпу. Работающее делегирование, освобождающее время для концентрации. Преодоление паралича анализа через правило 80%. Навыки запуска без потери качества. Фундамент для роста без выгорания.</p>
+    `,
+    titan: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: от амбиции к системе</h3>
+      <p class="mb-4">Ты — исключительная сила природы. У тебя есть и энергия, и фокус одновременно — то, что другие не могут совместить. Ты видишь большую картину И можешь её реализовать сам.</p>
+      
+      <p class="mb-4"><strong>Твой путь:</strong> построение мощных систем, которые работают без тебя. Но для этого тебе нужно научиться двум вещам: доверять команде и помнить, что другие люди не обязаны быть на твоём уровне.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 1: Построй фундамент</h4>
+      <p class="mb-3">В первые три дня определи ключевую амбицию на 1-3 года. Не просто "хочу больше зарабатывать" — конкретная цель с числами.</p>
+      <p class="mb-3">С четвёртого по седьмой день проведи системный аудит ресурсов. Оцени время, команду, финансы, технологии.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 2: Создай мощную систему</h4>
+      <p class="mb-3">Разработай дорожную карту роста. Разбей цель на крупные этапы с реальными сроками. Определи ключевые метрики успеха.</p>
+      <p class="mb-3"><strong>Важно:</strong> Ты можешь сам сделать всё быстрее и лучше, чем другие. Но это ловушка. Твоя задача — создать систему, где каждый делает свою часть.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 3: Запусти и масштабируй</h4>
+      <p class="mb-3">Запусти основные процессы. Делегируй рутинные задачи — даже если тебе кажется, что быстрее сделать самому.</p>
+      <p class="mb-3"><strong>Критически важно:</strong> не требуй от команды твоего темпа. Создавай разные стандарты для разных людей.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 4: Анализируй и корректируй</h4>
+      <p class="mb-3">Самое важное: возьми 2-3 дня полного отдыха. Выгоревший Титан теряет всё — системное мышление, ясность, энергию.</p>
+    `,
+    aether: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: от идей к воплощению</h3>
+      <p class="mb-4">Твой путь реализации состоит из четырёх этапов: собрать все идеи, выбрать сильнейшие, превратить их в прототипы, запустить в мир. Этот путь создан специально под твою природу.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 1: Сбор и систематизация идей</h4>
+      <p class="mb-3">В течение трёх дней выгрузи абсолютно всё, что в голове. Бизнес-идеи, творческие проекты, концепции для будущего — всё записывай без фильтра.</p>
+      <p class="mb-3">Затем структурируй: четыре категории (активные, приоритетные, перспективные, архив). Выбери три с наивысшими суммами баллов.</p>
+      <p class="mb-3">Создай минимальную систему дисциплины. Твоя энергия работает волнами. Определи 20-30 минут глубокой концентрации, когда ты создаёшь что-то ценное.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 2: Превращение идей в концепции</h4>
+      <p class="mb-3">Для каждой идеи создай mind map. Твой мозг работает ассоциативно — mind mapping это буквально визуализация того, как ты думаешь.</p>
+      <p class="mb-3">Создай MVP. Не совершенный, а работающий. Покажи это 3-5 людям из целевой аудитории. Ты склонен недооценивать свои идеи.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 3: Запуск и делегирование</h4>
+      <p class="mb-3">Определи, что делегировать: рутина, техническая реализация, детальная проработка. Это время тебе нужно перевести в генерацию, стратегию.</p>
+      <p class="mb-3">Начни искать исполнителей. Первый найм — помощник-исполнитель за 40-60 тысяч.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">НЕДЕЛЯ 4: Анализ и подготовка к масштабированию</h4>
+      <p class="mb-3">Проверь энергию: работает ли система дисциплины? Документируй достижения. Возьми 2-3 дня полного отдыха без работы.</p>
+    `,
+  };
+  return plans[type] || "";
+};
+
+const getMonetization = (type) => {
+  const strategies = {
+    impulse: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: от скорости к множеству потоков</h3>
+      <p class="mb-4">Твой путь монетизации один: создаёшь несколько источников дохода, работаешь в моменты энергии, продаёшь скорость и результат. Ниши ниже созданы для тех, кто работает волнами и любит разнообразие. Это твоя территория.</p>
+      
+      <p class="mb-4"><strong>Почему именно тебе это подходит:</strong> Другие строят один стабильный бизнес годами. Тебе скучно. Ты можешь вести три-пять направлений одновременно и не путаться. Твоя способность быстро переключаться между задачами — это оружие, которое даёт несправедливое преимущество.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ПЯТЬ НИШ БЫСТРЫХ РЕЗУЛЬТАТОВ</h4>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ниша 1: Продажи и развитие бизнеса</p>
+        <p class="mb-2"><strong>Почему именно тебе:</strong> Нужна высокая энергия и коммуникабельность. Разнообразие каждый день. Быстрая обратная связь — закрыл сделку, получил деньги. Sales Manager, Business Development, Account Manager — от 80-300+ тысяч в месяц.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты умеешь заражать энергией. Люди покупают не продукт, а твой энтузиазм. Пока другие продавцы читают скрипты, ты импровизируешь и закрываешь сделки быстрее всех.</p>
+        <p class="mb-2"><strong>Как начать:</strong> найди компанию с процентом от сделок, начни с простых продуктов, через 3-6 месяцев стабильные 150K+.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ниша 2: Event-менеджмент и организация мероприятий</p>
+        <p class="mb-2"><strong>Почему именно тебе:</strong> Каждое мероприятие — новый проект. Много движения, общения, адреналина. Видишь результат сразу. Не надоедает. Event-менеджер, организатор корпоративов, свадебный координатор — от 80-200+ тысяч.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты работаешь на адреналине. Пока другие паникуют в форс-мажорах, ты расцветаешь. Хаос — твоя стихия.</p>
+        <p class="mb-2"><strong>Как начать:</strong> помоги event-агентству, организуй 2-3 мероприятия для друзей, запусти канал с кейсами, через 6 месяцев свои клиенты.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ниша 3: Контент-креатор, блогер, SMM</p>
+        <p class="mb-2"><strong>Почему именно тебе:</strong> Постоянно новые идеи. Творческая свобода. Работа волнами — в приступы делаешь батчи контента. Масштабируется до миллионов. TikTok-креатор, SMM-менеджер, личный бренд — от 50-500+ тысяч.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> твоя энергия заразительна. Люди подписываются не на контент, а на твою энергию. Ты естественно вовлекаешь.</p>
+        <p class="mb-2"><strong>Как начать:</strong> выбери платформу, постируй 30 дней батчами, набери 10K, начни продавать, через 3-6 месяцев первые деньги.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ниша 4: Стартапы и быстрорастущие компании</p>
+        <p class="mb-2"><strong>Почему именно тебе:</strong> Хаос и неопределённость — твоя стихия. Нужно делать быстро. Много разных задач. Быстрый рост. Growth-хакер, Product Manager, Head of Operations — от 120-180+ тысяч.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты не боишься хаоса. Пока другие требуют чёткие процессы, ты процветаешь в неопределённости. Стартапы платят за скорость решений.</p>
+        <p class="mb-2"><strong>Как начать:</strong> мониторь vc.ru, ищи early-stage стартапы, предложи услуги на 3 месяца, покажи результат, получи долю.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ниша 5: Фриланс в креативных индустриях</p>
+        <p class="mb-2"><strong>Почему именно тебе:</strong> Работаешь когда есть энергия. Выбираешь интересные проекты. Много клиентов — разнообразие. Быстрые деньги. Копирайтер, дизайнер, видеомонтажёр, консультант — от 80-150+ тысяч.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты делаешь за день то, на что у других уходит неделя. Можешь брать "срочные" проекты с наценкой 2х.</p>
+        <p class="mb-2"><strong>Как начать:</strong> выбери навык, сделай 3 проекта бесплатно, выйди на биржи, первый клиент через 1-2 месяца, стабильный доход через 6.</p>
+      </div>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ТВОЯ СТРАТЕГИЯ: МНОЖЕСТВО ПОТОКОВ</h4>
+      <p class="mb-3">Не ставь всё на одну карту. Один основной источник (60% дохода), 2-3 побочных (30%), 1-2 пассивных (10%). Пример: работа в продажах 150K, фриланс 50K, телеграм-канал 25K. Итого: 225K в месяц.</p>
+      
+      <p class="mb-3"><strong>Этап 1 (1-2 месяца):</strong> Определись, запусти, первый платный проект.</p>
+      <p class="mb-3"><strong>Этап 2 (3-4 месяца):</strong> Работай на основном, запусти побочный, цель 80-100K.</p>
+      <p class="mb-3"><strong>Этап 3 (5-6 месяцев):</strong> Подними цены, второй клиент, делегируй, цель 120-150K.</p>
+      <p class="mb-3"><strong>Этап 4 (7-12 месяцев):</strong> Основной 150K, побочные 50K, пассивный 20K, цель 200K+.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">КОНКРЕТНЫЕ ШАГИ</h4>
+      <p>Не пытайся на долгосрочных проектах — скучно. Выбирай то, где платят за скорость. Создавай несколько источников. Продавай результат, не время. Работай в приступы энергии — зарабатывай по максимуму.</p>
+    `,
+    focus: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: от глубины к премиуму</h3>
+      <p class="mb-4">Твой путь монетизации один: становишься экспертом в узкой нише, продаёшь качество по премиум-ценам, создаёшь продукты, которые работают без тебя. Ниши ниже созданы для тех, кто работает не быстро, а качественно. Это твоя территория.</p>
+      
+      <p class="mb-4"><strong>Почему именно тебе это подходит:</strong> Другие конкурируют скоростью и ценой. Ты конкурируешь глубиной и качеством. В премиум-сегменте клиенты готовы ждать и платить больше за безупречный результат. Твоя способность к глубокой концентрации — это твоё оружие.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ПЯТЬ НИШ ПРЕМИУМ-КАЧЕСТВА</h4>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ниша 1: Высокотехнологичные специальности</p>
+        <p class="mb-2"><strong>Почему именно тебе:</strong> Требуется глубокое погружение на год-два. Другие не выдержат — им скучно углубляться в одно. Ты можешь. Senior Developer, DevOps Engineer, Data Scientist, Архитектор систем — от 200-300+ тысяч в месяц.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты знаешь технологию на уровне, которого большинство никогда не достигнет. Ты видишь подводные камни, которые другие пропускают. Компании готовы платить огромные деньги за того, кто знает систему лучше всех.</p>
+        <p class="mb-2"><strong>Как начать:</strong> выбери одну технологию, углубляйся 6-12 месяцев, стань в ней топ-10%. Зарплата вырастет в 2-3 раза. Путь: Junior (80-100K) → Middle (150-180K) → Senior (200-300K) → Lead/Architect (300-500K). На каждый уровень 1-2 года глубокого изучения.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ниша 2: Аналитика и исследования</p>
+        <p class="mb-2"><strong>Почему именно тебе:</strong> Работа с данными и деталями. Нужна точность, которую другие не могут обеспечить. Data Analyst, Business Analyst, Financial Analyst — от 120-200+ тысяч.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты видишь паттерны в данных, которые другие пропускают. Твои отчёты детальные и точные. Компании доверяют твоим выводам, потому что знают — ты проверил всё трижды.</p>
+        <p class="mb-2"><strong>Как начать:</strong> изучи Excel/SQL/Python на экспертном уровне, освой статистику, сделай 3-5 кейсов для портфолио. Через 6-9 месяцев первые серьёзные деньги.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ниша 3: Медицина и наука</p>
+        <p class="mb-2"><strong>Почему именно тебе:</strong> Ошибка стоит дорого — нужна твоя точность. Долгое обучение создаёт высокий порог входа. Экспертиза растёт годами. Врач-специалист, научный сотрудник, медицинский консультант — от 150-400+ тысяч.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты не торопишься в диагностике. Ты проверяешь всё, читаешь все исследования. Пациенты доверяют тебе, потому что знают — ты досконально разобрался.</p>
+        <p class="mb-2"><strong>Как масштабировать:</strong> стань экспертом в узкой нише, создай образовательный контент, консультации онлайн, экспертиза для компаний.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ниша 4: Юриспруденция и консалтинг</p>
+        <p class="mb-2"><strong>Почему именно тебе:</strong> Сложные долгосрочные проекты. Нужна детальная проработка. Юрист, Tax консультант, IP-специалист, Арбитражный юрист — от 150-300+ тысяч.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты читаешь все документы полностью. Ты находишь детали, которые другие пропускают. Одна найденная тобой деталь может сэкономить клиенту миллионы.</p>
+        <p class="mb-2"><strong>Как начать:</strong> выбери узкую специализацию, изучи досконально 1-2 года, работай в компании для опыта, через 3-5 лет своя практика.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ниша 5: Преподавание и экспертное обучение</p>
+        <p class="mb-2"><strong>Почему именно тебе:</strong> Глубокое знание темы — твоя сила. Можешь работать в своём темпе. Качественный контент ценится. Репетитор, онлайн-курсы, корпоративный тренер — от 150-200+ тысяч в месяц.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты создаёшь не поверхностные курсы, а глубокие программы, которые реально меняют людей. Твои студенты получают не "лайфхаки", а фундаментальное понимание. За это готовы платить больше.</p>
+        <p class="mb-2"><strong>Как начать:</strong> стань экспертом в узкой теме, начни с бесплатных консультаций, создай мини-курс, продавай через соцсети, масштабируй до школы.</p>
+      </div>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ТВОЯ СТРАТЕГИЯ РОСТА</h4>
+      <p class="mb-3"><strong>Этап 1 (6-12 месяцев): Углубление.</strong> Выбери одну нишу, стань в ней топ-10%, знай тему лучше 90% конкурентов. Цель: 80-120 тысяч в месяц.</p>
+      <p class="mb-3"><strong>Этап 2 (6-12 месяцев): Премиум-позиционирование.</strong> Не конкурируй ценой, продавай качество и экспертизу. Твои клиенты — те, кто ценит глубину. Цель: 150-200 тысяч в месяц.</p>
+      <p class="mb-3"><strong>Этап 3 (12+ месяцев): Пассивный доход.</strong> Создай продукт, который продаётся без тебя — курсы, книги, шаблоны. Консультации по высокой цене. Цель: 250+ тысяч в месяц.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">КОНКРЕТНЫЕ ШАГИ</h4>
+      <p>Не гонись за количеством — строй глубину. Один клиент за 100K лучше десяти по 10K. Инвестируй время в обучение — это окупится. Продавай экспертизу, а не часы. Создавай продукты премиум-качества, которые продаются сами.</p>
+    `,
+    titan: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: от исключительности к доминированию</h3>
+      <p class="mb-4">Твой путь монетизации один: выбираешь направление, где нужны масштаб и выносливость, строишь систему, доминируешь в нише.</p>
+      
+      <p class="mb-4"><strong>Почему именно тебе это подходит:</strong> Большинство не посмеют конкурировать с тобой в этих сферах. Им не хватает ни энергии, ни системного мышления.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ПЯТЬ НИШ ДОМИНИРОВАНИЯ</h4>
+      
+      <div class="mb-6">
+        <p class="font-bold">Ниша 1: Руководство крупными проектами</p>
+        <p class="mb-2">CEO, COO, Project Manager — от 200+ тысяч в месяц.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты можешь держать руку на пульсе всех процессов.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold">Ниша 2: Строительство масштабируемого бизнеса</p>
+        <p class="mb-2">Предпринимательство, франчайзинг — от 250+ тысяч в месяц.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> другие строят один бизнес. Ты можешь построить три параллельно.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold">Ниша 4: Консалтинг и бизнес-стратегия</p>
+        <p class="mb-2">Бизнес-консультанты, стратеги — от 200+ тысяч в месяц.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты не просто даёшь рекомендации, но и внедряешь их.</p>
+      </div>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ТВОЯ СТРАТЕГИЯ РОСТА</h4>
+      <p class="mb-3">Этап 1 (0-6 месяцев): Фундамент. Создай систему, которая может работать без тебя.</p>
+      <p class="mb-3">Этап 2 (6-12 месяцев): Рост. Масштабируй без потери качества.</p>
+      <p>Этап 3 (12-18 месяцев): Масштабирование. Доминирование в нише.</p>
+    `,
+    aether: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: от концепции к доходу</h3>
+      <p class="mb-4">Твой путь монетизации один: создаёшь интеллектуальный актив, упаковываешь его, продаёшь, масштабируешь. Твоя ценность — не в количестве часов работы, а в уникальности твоих инсайтов.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ПЯТЬ ФОРМ РЕАЛИЗАЦИИ</h4>
+      
+      <div class="mb-6">
+        <p class="font-bold">Форма 1: Стратегическое консультирование</p>
+        <p class="mb-2">Стратегический консультант — 150-200+ тысяч в месяц.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты видишь слабые места, которые другие не замечают.</p>
+        <p class="mb-2">Как начать: сделай 3-5 бесплатных аудитов, собери кейсы, цена от 50 тысяч за аудит.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold">Форма 2: Образовательные курсы</p>
+        <p class="mb-2">От 100 тысяч в месяц (100 студентов × 5 тысяч).</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты даёшь уникальные фреймворки, которые меняют мышление.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold">Форма 3: Авторство и методологии</p>
+        <p class="mb-2">Гонорары от 100 тысяч плюс роялти.</p>
+        <p class="mb-2"><strong>Твоё преимущество:</strong> ты создаёшь принципиально новый подход, который потом будут цитировать.</p>
+      </div>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ТВОЯ СТРАТЕГИЯ</h4>
+      <p class="mb-3">Этап 1 (0-6 месяцев): Упаковка идеи. Цель: 50-100 тысяч в месяц.</p>
+      <p class="mb-3">Этап 2 (6-12 месяцев): Масштабирование. Нанимаешь команду. Цель: 200-300 тысяч.</p>
+      <p>Этап 3 (12+ месяцев): Пассивный доход. Продукты продаются сами. Цель: 500+ тысяч.</p>
+    `,
+  };
+  return strategies[type] || "";
+};
+
+const getTeamBuilding = (type) => {
+  const teams = {
+    impulse: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: генератор + финишеры</h3>
+      <p class="mb-4">Твой путь построения команды один: ты генерируешь идеи и энергию, команда доводит до конца. Для тебя это не просто удобно — это необходимо для роста.</p>
+      
+      <p class="mb-4"><strong>Почему именно тебе это критично:</strong> Ты единственный тип, который может запустить проект за день. Но ты же единственный, кто бросит его через неделю, когда появится новая идея. Тебе нужны люди, которые подхватывают твои проекты и ведут их дальше.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">РОЛИ, КОТОРЫЕ ДОПОЛНЯЮТ ТЕБЯ</h4>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Фокус — твой "финишер" (40-60 тысяч)</p>
+        <p class="mb-2"><strong>Почему именно тебе он критичен:</strong> Ты генерируешь, Фокус доводит до совершенства. Ты быстро стартуешь, Фокус качественно завершает. Ты создаёшь хаос, Фокус наводит порядок. Вы дополняете друг друга на 100%.</p>
+        <p>Ты придумываешь концепцию за 2 часа, Фокус прорабатывает детали 2 недели. Ты презентуешь клиентам, Фокус реализует. Это идеальное разделение труда.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Титан — твой "масштабировщик" (80-120 тысяч)</p>
+        <p class="mb-2"><strong>Почему именно тебе он нужен:</strong> Ты запускаешь проекты, Титан их масштабирует. Ты хаотичен, Титан структурирует. Ты теряешь интерес, Титан продолжает развивать.</p>
+        <p>Ты запускаешь MVP и привлекаешь первых клиентов, Титан строит систему масштабирования. Ты продолжаешь генерировать идеи, Титан реализует с командой.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Эфир — твой "стратег" (консультант)</p>
+        <p>Почему именно тебе он полезен: Ты действуешь быстро, Эфир видит долгосрочные последствия. Ты хватаешься за всё, Эфир помогает выбрать правильное. Раз в месяц стратегическая сессия, он даёт направления, ты реализуешь.</p>
+      </div>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">КАК ДЕЛЕГИРОВАТЬ</h4>
+      <p class="mb-3">Записывай голосом — не пиши длинные ТЗ, надиктуй 2-3 минуты. Используй чек-листы для повторяющихся задач. Еженедельные созвоны 30 минут. Дай свободу — скажи ЧТО нужно, не КАК.</p>
+      
+      <p class="mb-3"><strong>Главное правило для тебя:</strong> делегируй всё, кроме генерации идей и продаж. Это твоя зона гения. Всё остальное — команда.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ПЛАН ДЕЙСТВИЙ</h4>
+      <p class="mb-3"><strong>Сегодня:</strong> выпиши 10 задач, отметь делегируемые.</p>
+      <p class="mb-3"><strong>Эта неделя:</strong> найди фрилансера, дай тестовое за 5K.</p>
+      <p class="mb-3"><strong>Этот месяц:</strong> делегируй 30% времени, потрать на идеи и продажи.</p>
+      <p class="mb-3"><strong>Через 3 месяца:</strong> ты делаешь только любимое, команда занимается рутиной, доход вырос в 2 раза.</p>
+      
+      <p class="mt-6"><strong>Ты не можешь делать всё сам.</strong> Твоя суперсила — энергия и идеи. Найди тех, кто превратит их в результат. Нанимай финишеров, не пытайся контролировать всё, твоя роль — генерировать энергию. Идеальный партнёр — Фокус или Титан. Избегай работы с другими Импульсами без "якоря".</p>
+    `,
+    focus: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: мастер + исполнители</h3>
+      <p class="mb-4">Твой путь построения команды один: защищаешь время для глубокой работы, делегируешь всё остальное. Для тебя это сложнее, чем для других, потому что никто не сделает так качественно, как ты. Но это ловушка.</p>
+      
+      <p class="mb-4"><strong>Почему именно тебе это критично:</strong> Ты можешь расти в одиночку дольше других — твоё качество позволяет работать с премиум-клиентами даже без команды. Но с командой ты можешь в 5 раз больше, сохраняя качество.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ТРИ УРОВНЯ ДЕЛЕГИРОВАНИЯ</h4>
+      <p class="mb-3"><strong>Уровень 1: Только ты (30-40% времени).</strong> Основная экспертная работа, проектирование решений, контроль качества ключевых моментов, обучение команды стандартам. Это твоя зона гения.</p>
+      <p class="mb-3"><strong>Уровень 2: Делегируй с обучением (20-30%).</strong> Создай детальные инструкции, обучи сотрудника, проверяй первые 3-5 раз, потом отпусти. Проверка документов, коммуникация по шаблонам, подготовка отчётов.</p>
+      <p class="mb-3"><strong>Уровень 3: Полное делегирование (30-50%).</strong> Административная рутина, поиск информации, планирование встреч, ведение соцсетей, бухгалтерия. Отдай и забудь.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">РОЛИ, КОТОРЫЕ ДОПОЛНЯЮТ ТЕБЯ</h4>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Импульс — менеджер по продажам (50K + 10-20% от сделок)</p>
+        <p><strong>Почему именно тебе он критичен:</strong> Ты не любишь продавать. Это отнимает энергию, которую ты тратишь на экспертную работу. Импульс делает продажи в 5 раз быстрее и лучше. Ты создаёшь качество, он находит клиентов. Это идеальное разделение труда.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Ассистент-администратор (40-60 тысяч)</p>
+        <p><strong>Почему именно тебе он нужен:</strong> Рутина съедает твою энергию быстрее, чем у других типов. Ассистент освобождает 10-15 часов в неделю, которые ты потратишь на глубокую работу. Это прямая инвестиция в рост дохода.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold mb-2">Маркетолог/SMM (60-80 тысяч)</p>
+        <p><strong>Почему именно тебе он важен:</strong> Ты не любишь соцсети и продвижение. Маркетолог привлекает лидов, пока ты работаешь над качеством. Это позволяет масштабироваться без потери фокуса.</p>
+      </div>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">КАК ДЕЛЕГИРОВАТЬ</h4>
+      <p class="mb-3">Создай детальные инструкции — не жалей времени на документацию. Обучи досконально — покажи как делать правильно. Установи систему контроля — еженедельные отчёты, чек-листы. Постепенно отпускай контроль — через месяц проверяй реже.</p>
+      
+      <p class="mb-3"><strong>Главное правило для тебя:</strong> доверяй команде. Они не сделают на 100% как ты — они сделают на 80%. Но 80% от команды лучше, чем 100% только от тебя, потому что ты физически не можешь всё.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">БАЛАНС РАБОТЫ И ОТДЫХА</h4>
+      <p class="mb-3">Ты восстанавливаешься медленнее других. Планируй отдых как часть системы. Делегируй задачи, которые истощают. Защищай своё здоровье — без него качество падает.</p>
+      
+      <p class="mt-6">Твоя задача — создавать то, что никто кроме тебя не может. Всё остальное — команда. Эффективная команда позволяет тебе не терять качество, сохранять энергию, расти без выгорания. Это единственный способ масштабироваться, оставаясь мастером.</p>
+    `,
+    titan: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: лидер + исполнители</h3>
+      <p class="mb-4">Делегируешь всё, что не требует твоего стратегического видения. Но для тебя это сложнее, потому что ты можешь сделать всё сам быстрее и лучше.</p>
+      
+      <p class="mb-4"><strong>Почему именно тебе это критично:</strong> Твоя сила в том, что ты видишь большую картину и можешь управлять масштабом. С командой ты можешь в 10 раз больше.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ТРИ ПРИНЦИПА ДЕЛЕГИРОВАНИЯ</h4>
+      <p class="mb-3"><strong>Принцип 1:</strong> Делегируй всё, что не требует твоего видения. Рутина, детали, операционка — это не твоя зона.</p>
+      <p class="mb-3"><strong>Принцип 2:</strong> Не микроменеджь. Установи KPI, проверяй результаты, но не процесс.</p>
+      <p class="mb-3"><strong>Принцип 3:</strong> Помни, что другие работают медленнее. Создавай разные стандарты для разных людей.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">РОЛИ, КОТОРЫЕ ДОПОЛНЯЮТ ТЕБЯ</h4>
+      
+      <div class="mb-6">
+        <p class="font-bold">Операционный директор (COO) — 120-200+ тысяч</p>
+        <p>Ты думаешь стратегически, COO воплощает. Он строит системы, контролирует процессы. Это освобождает тебя для роста.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold">Менеджер проектов — 80-120 тысяч</p>
+        <p>У тебя всегда несколько проектов одновременно. Менеджер координирует ресурсы, контролирует сроки.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold">Руководитель продаж — 50 тысяч + % от сделок</p>
+        <p>Без роста доходов нет масштабирования. Руководитель продаж строит машину денег.</p>
+      </div>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">КАК ДЕЛЕГИРОВАТЬ</h4>
+      <p class="mb-3">Стандартизируй процессы — создавай инструкции. Регулярные отчёты и встречи. Система полномочий.</p>
+      <p><strong>Главное правило:</strong> доверяй команде. Ты можешь сделать лучше, но с командой ты можешь в 10 раз больше.</p>
+    `,
+    aether: `
+      <h3 class="text-xl font-bold mb-3">Твой путь: архитектор + исполнители</h3>
+      <p class="mb-4">Делегируешь по трём уровням — только ты, делегируй с контролем, полное делегирование. Ты не можешь делать всё сам. Твоя задача — создавать концепции.</p>
+      
+      <p class="mb-4"><strong>Почему именно тебе это критически важно:</strong> Другие типы могут работать в одиночку. Ты — нет. Не потому, что ты слабый, а потому что твоя сила — в другом.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ТРИ УРОВНЯ ДЕЛЕГИРОВАНИЯ</h4>
+      <p class="mb-3"><strong>Уровень 1: Только ты (10-20%).</strong> Генерация идей, стратегическое видение, создание уникального контента.</p>
+      <p class="mb-3"><strong>Уровень 2: Делегируй с контролем (30-40%).</strong> Детализация твоих идей, создание контента по шаблонам.</p>
+      <p class="mb-3"><strong>Уровень 3: Полное делегирование (50-60%).</strong> Вся рутина — администрация, техническая реализация.</p>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">ПОСЛЕДОВАТЕЛЬНОСТЬ НАЙМА</h4>
+      
+      <div class="mb-6">
+        <p class="font-bold">Первый найм — помощник-исполнитель (40-60 тысяч)</p>
+        <p>Ты генерируешь идеи быстрее, чем успеваешь их систематизировать. Помощник переносит хаос из твоей головы в структуру.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold">Второй найм — менеджер по продажам (50 тысяч + 10-20%)</p>
+        <p>Ты не любишь продавать. Менеджер по продажам берёт на себя всю коммуникацию, ты только даёшь концепцию.</p>
+      </div>
+      
+      <div class="mb-6">
+        <p class="font-bold">Третий найм — операционный директор (100-150 тысяч)</p>
+        <p>Когда у тебя 2+ проектов, ты начинаешь терять фокус. COO берёт на себя всё управление.</p>
+      </div>
+      
+      <h4 class="text-lg font-bold mt-6 mb-3">КАКИЕ РОЛИ ДОПОЛНЯЮТ ТЕБЯ</h4>
+      <p class="mb-3"><strong>Титан</strong> управляет всем и превращает твои идеи в системы.</p>
+      <p class="mb-3"><strong>Импульс</strong> быстро запускает и продаёт.</p>
+      <p class="mb-3"><strong>Фокус</strong> прорабатывает детали и гарантирует качество.</p>
+      <p><strong>Важно:</strong> Двое Эфиров без Титана или Импульса — это бесконечные обсуждения без реализации.</p>
+    `,
+  };
+  return teams[type] || "";
+};
+
+// Actions
+const submitFeedback = async () => {
+  if (!selectedRating.value) return;
+
+  submittingFeedback.value = true;
+  try {
+    await $fetch("/api/results/satisfaction", {
+      method: "POST",
+      body: {
+        resultId: resultId.value,
+        rating: selectedRating.value,
+        feedback: feedbackText.value,
+      },
+    });
+
+    feedbackSubmitted.value = true;
+  } catch (err) {
+    console.error("Error submitting feedback:", err);
+    alert("Ошибка при отправке оценки. Попробуйте снова.");
+  } finally {
+    submittingFeedback.value = false;
+  }
+};
+
 const shareResult = () => {
+  const url = window.location.href;
+  const text = `Я прошёл тест на энерготип и узнал, что я ${getTypeTitle(
+    resultType.value
+  )}! Пройди и ты:`;
+
   if (navigator.share) {
     navigator.share({
-      title: "Мой тип личности",
-      text: `Я прошёл тест и узнал, что я ${result.value?.title}`,
-      url: window.location.href,
+      title: "Мой энерготип",
+      text: text,
+      url: url,
     });
   } else {
-    // Fallback: copy to clipboard
-    navigator.clipboard.writeText(window.location.href);
-    alert("Ссылка скопирована в буфер обмена");
+    navigator.clipboard.writeText(`${text} ${url}`);
+    alert("Ссылка скопирована в буфер обмена!");
   }
 };
 
 const retakeQuiz = async () => {
-  // Clear session data
   if (process.client) {
     sessionStorage.removeItem("quizSessionId");
     sessionStorage.removeItem("quizUserId");
   }
-
-  // Navigate to onboarding
   await navigateTo("/quiz/onboarding");
 };
 
 const retry = () => {
-  error.value = "";
-  // Refresh the data
-  refresh();
+  window.location.reload();
 };
+
+// SEO
+useHead({
+  title: computed(
+    () => `Твой тип: ${getTypeTitle(resultType.value)} — Результат теста`
+  ),
+  meta: [
+    {
+      name: "description",
+      content: "Результаты теста на энерготип с персональными рекомендациями",
+    },
+    {
+      name: "robots",
+      content: "noindex, follow",
+    },
+  ],
+});
 </script>
+
+<style scoped>
+.prose {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.prose p {
+  margin-bottom: 1em;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: #111827;
+}
+</style>

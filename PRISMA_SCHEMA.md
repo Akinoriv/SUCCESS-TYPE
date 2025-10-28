@@ -1,4 +1,3 @@
-
 # PRISMA SCHEMA REFERENCE
 
 Скопируй эту схему в `prisma/schema.prisma` после `npx prisma init`.
@@ -39,14 +38,15 @@ model QuizSession {
 }
 
 model QuizResult {
-  id                String      @id @default(uuid())
-  sessionId         String      @unique
-  resultType        String
-  resultData        Json
-  satisfactionScore Int?
-  createdAt         DateTime    @default(now())
-  session           QuizSession @relation(fields: [sessionId], references: [id])
-  purchases         Purchase[]
+  id                   String      @id @default(uuid())
+  sessionId            String      @unique
+  resultType           String      // "impulse" | "focus" | "titan" | "aether"
+  resultData           Json        // Полные данные результата
+  satisfactionScore    Int?        // Оценка от 1 до 5
+  satisfactionFeedback String?     // Текстовый отзыв (опционально)
+  createdAt            DateTime    @default(now())
+  session              QuizSession @relation(fields: [sessionId], references: [id])
+  purchases            Purchase[]
   @@map("quiz_results")
 }
 
@@ -115,16 +115,77 @@ model AnalyticsEvent {
 ```
 
 ## Применение миграций:
+
 ```bash
 npx prisma migrate dev --name init
 ```
 
 ## Генерация Prisma Client:
+
 ```bash
 npx prisma generate
 ```
 
 ## Просмотр БД в браузере:
+
 ```bash
 npx prisma studio
+```
+
+---
+
+## 📝 Последние изменения схемы
+
+### [2024-10-28] Добавлено поле satisfactionFeedback
+
+- **Таблица:** `quiz_results`
+- **Поле:** `satisfactionFeedback String?`
+- **Назначение:** Сохранение текстовых отзывов пользователей о точности результата
+- **Миграция:** `20251028181659_add_satisfaction_feedback`
+
+### [2024-10-27] Добавлена таблица Question
+
+- **Таблица:** `questions`
+- **Поля:** `variations Json`, `options Json`, `dimension String`
+- **Назначение:** Хранение вопросов с персонализацией по полу
+
+### Структура данных в Json полях:
+
+#### QuizResult.resultData
+
+```json
+{
+  "title": "ИМПУЛЬС",
+  "description": "Высокая энергия • Широкий фокус",
+  "scores": {
+    "energy": 22,
+    "focus": 15
+  }
+}
+```
+
+#### Question.variations
+
+```json
+{
+  "default": "Текст вопроса по умолчанию",
+  "male": "Текст для мужчин",
+  "female": "Текст для женщин"
+}
+```
+
+#### Question.options (для type="choice")
+
+```json
+{
+  "А": {
+    "text": "Текст ответа",
+    "variations": {
+      "default": "Забыл про нее",
+      "male": "Забыл про нее",
+      "female": "Забыла про нее"
+    },
+    "score": 4
+  }
+}
 ```

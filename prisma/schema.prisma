@@ -34,14 +34,15 @@ model QuizSession {
 }
 
 model QuizResult {
-  id                String      @id @default(uuid())
-  sessionId         String      @unique
-  resultType        String
-  resultData        Json
-  satisfactionScore Int?
-  createdAt         DateTime    @default(now())
-  session           QuizSession @relation(fields: [sessionId], references: [id])
-  purchases         Purchase[]
+  id                   String      @id @default(uuid())
+  sessionId            String      @unique
+  resultType           String
+  resultData           Json
+  satisfactionScore    Int?
+  satisfactionFeedback String?
+  createdAt            DateTime    @default(now())
+  session              QuizSession @relation(fields: [sessionId], references: [id])
+  purchases            Purchase[]
   @@map("quiz_results")
 }
 

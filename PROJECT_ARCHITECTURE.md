@@ -1,4 +1,3 @@
-
 # PROJECT ARCHITECTURE
 
 ## ОБЗОР ПРОДУКТА
@@ -11,28 +10,44 @@
 ## БИЗНЕС-ЛОГИКА
 
 ### User Flow
+
 1. **Landing Page** (A/B тест вариантов) → CTA "Начать тест"
-2. **Quiz** (10 вопросов) → прогресс-бар, сохранение ответов
-3. **Results Page** → базовый результат + satisfaction rating
-4. **Offer** → предложение купить полный анализ (990₽)
-5. **Payment** → ЮКасса (МИР, СБП, карты)
-6. **Webhook** → отправка email с PDF (TODO: later)
+2. **Onboarding** → выбор пола, возраста, согласие на обработку данных
+3. **Quiz** (14 вопросов) → прогресс-бар, персонализация по полу, сохранение ответов
+4. **Results Page (Free)** → детальный результат (суть, суперсилы, слабости, стратегии)
+5. **Feedback** → оценка точности результата (1-5) + опциональный текстовый отзыв
+6. **Extended Report (Temporarily Free)** → 3 блока (план 30 дней, монетизация, команда)
+7. **Payment** → ЮКасса (МИР, СБП, карты) — **будет активировано после тестирования**
+8. **Webhook** → отправка email с PDF (TODO: later)
 
 ### A/B Testing Strategy
+
 - Cookie-based (30 дней)
 - Weighted distribution (Вариант A: 50%, B: 50%)
 - Метрики: CR (landing → quiz), CR (quiz → payment)
 - Цель: найти вариант с максимальной конверсией
 
 ### Analytics Goals (Яндекс.Метрика)
+
 - `START_QUIZ` — клик CTA на landing
+- `QUIZ_STARTED` — начало прохождения вопросов
 - `QUIZ_COMPLETED` — завершение теста
-- `PAYMENT_INITIATED` — клик "Купить"
-- `PURCHASE` — успешная оплата
+- `FEEDBACK_SUBMITTED` — отправка оценки результата
+- `EXTENDED_REPORT_OPENED` — открытие расширенного отчёта
+- `PAYMENT_INITIATED` — клик "Купить" (будет активно позже)
+- `PURCHASE` — успешная оплата (будет активно позже)
+
+### Key Metrics для отслеживания:
+
+- **Средняя оценка удовлетворённости** (satisfactionScore)
+- **Процент пользователей, оставивших отзыв** (feedbackRate)
+- **Конверсия в открытие расширенного отчёта** (extendedReportOpenRate)
+- **Средний рейтинг по типам результата** (averageRatingByType)
 
 ## ТЕХНИЧЕСКАЯ АРХИТЕКТУРА
 
 ### Frontend Layer (Nuxt.js 3)
+
 ```
 pages/
 ├─ landing-[variant].vue    → SSG, статическая генерация
@@ -58,6 +73,7 @@ composables/
 ```
 
 ### Backend Layer (Nuxt Nitro)
+
 ```
 server/
 ├─ api/
@@ -90,49 +106,61 @@ utils/
 ### Database Schema (PostgreSQL)
 
 **users** — Пользователи (созданы при первом посещении)
+
 - id, email, age, gender, createdAt
 
 **quiz_sessions** — Сессии прохождения тестов
+
 - id, userId, quizId, startedAt, completedAt, ipAddress
 
 **quiz_results** — Результаты тестов (расчёт на основе test_answers)
-- id, sessionId (FK), resultType, resultData (JSON), satisfactionScore
+
+- id, sessionId (FK), resultType, resultData (JSON), satisfactionScore, satisfactionFeedback
 
 **test_answers** — Сырые ответы на вопросы
+
 - id, sessionId (FK), questionId, answer, timestamp
 
 **purchases** — Покупки дополнительных результатов
+
 - id, userId (FK), resultId (FK), amount, paymentId, paymentStatus, gateway, paymentData (JSON)
 
 **landing_variants** — Варианты landing pages для A/B тестов
+
 - id, name, slug, contentJson (JSON), isActive, trafficSplit
 
 **user_assignments** — Назначение вариантов пользователям
+
 - id, userId (FK), variantId (FK), assignedAt, converted
 
 **analytics_events** — События для аналитики
+
 - id, eventType, userId, sessionId, variantId, eventData (JSON), timestamp
 
 ### External Services Integration
 
 **ЮКасса (YooCheckout API)**
+
 - SDK: @a2seven/yoo-checkout
 - Методы оплаты: МИР, СБП, банковские карты, SberPay, Tinkoff Pay
 - Webhook: /api/payment/webhook (обработка payment.succeeded)
 - Чеки 54-ФЗ: автоматическая отправка
 
 **Яндекс.Метрика**
+
 - SDK: yandex-metrika-vue3
 - Features: clickmap, webvisor, accurateTrackBounce
 - Goals: настроены в интерфейсе Метрики
 - Параметры визита: { variant: 'A' } для сегментации
 
 **Supabase (PostgreSQL hosting)**
+
 - Connection pooling
 - Auto backups
 - Free tier: 500MB, 2GB bandwidth
 
 **Vercel (Hosting)**
+
 - Serverless Functions (Nitro)
 - Auto-scaling
 - CI/CD from GitHub
@@ -141,6 +169,7 @@ utils/
 ## DATA FLOW DIAGRAMS
 
 ### Quiz Completion Flow
+
 ```
 User → pages/quiz/[id].vue
   ↓ onMounted()
@@ -166,6 +195,7 @@ User clicks "Завершить"
 ```
 
 ### Payment Flow
+
 ```
 User on /results/[id] → clicks "Купить за 990₽"
   ↓
@@ -192,6 +222,7 @@ YooKassa → POST /api/payment/webhook { event: 'payment.succeeded', object: { i
 ```
 
 ### A/B Test Assignment Flow
+
 ```
 User visits https://yourdomain.ru/
   ↓
@@ -199,7 +230,7 @@ server/middleware/ab-redirect.ts
   ↓
 Check cookie 'ab_variant'?
   ├─ YES → redirect to /landing-{variant}
-  └─ NO → 
+  └─ NO →
       → GET /api/ab-test/get-variants
       → selectByWeight(variants) → Вариант B
       → setCookie('ab_variant', 'B', 30 days)
@@ -211,28 +242,34 @@ Check cookie 'ab_variant'?
 ## SCALING STRATEGY
 
 ### Current (MVP): Russia-only
+
 - Payment: ЮКасса (RUB)
 - Analytics: Яндекс.Метрика
 - Currency: RUB only
 - Language: Russian
 
 ### Future: International
+
 **Phase 1: Add Stripe** (2-3 hours)
+
 - Create utils/payment-adapter.ts (interface PaymentGateway)
 - Implement StripeAdapter, YooKassaAdapter
 - Auto-detect country by IP → select gateway
 
 **Phase 2: Multi-currency** (1 hour)
+
 - Add currency field to purchases table
 - Support USD, EUR, RUB
 - Dynamic pricing based on country
 
 **Phase 3: i18n** (4-5 hours)
+
 - Install @nuxtjs/i18n
 - Extract all texts to locales/ru.json, locales/en.json
 - Auto-detect language from browser
 
 **Phase 4: Multi-region analytics** (2 hours)
+
 - Add Google Analytics for non-RU users
 - Keep Yandex.Metrika for RU users
 - Unified interface: useAnalytics() composable
@@ -269,6 +306,7 @@ Check cookie 'ab_variant'?
 ## COST ESTIMATION
 
 **MVP (0-1000 users/month):**
+
 - Supabase: Free tier ($0)
 - Vercel: Free tier ($0)
 - ЮКасса: 2.8% per transaction
@@ -276,6 +314,7 @@ Check cookie 'ab_variant'?
 - **Total: $0-30/month**
 
 **Growth (10k users/month):**
+
 - Supabase Pro: $25/month
 - Vercel Pro: $20/month
 - ЮКасса: 2.8% × revenue
@@ -284,16 +323,19 @@ Check cookie 'ab_variant'?
 ## DEVELOPMENT PHASES
 
 **Phase 1: MVP (140 hours solo, 35-50 hours with AI)**
+
 - All core features
 - Russia-only
 - Manual testing
 
 **Phase 2: Optimization (20 hours)**
+
 - Admin panel (Prisma Studio + custom dashboard)
 - Email integration (Unisender)
 - Error monitoring (Sentry)
 
 **Phase 3: Scale (15 hours)**
+
 - International payments (Stripe)
 - Multi-language (i18n)
 - Advanced analytics
@@ -301,41 +343,70 @@ Check cookie 'ab_variant'?
 ## KEY DECISIONS & RATIONALE
 
 **Why Nuxt.js?**
+
 - Developer knows Vue.js (faster than learning React)
 - SSR/SSG out of the box (SEO critical)
 - Nitro serverless backend (no separate Node server)
 
 **Why ЮКasca not Stripe?**
+
 - Target market is Russia (ЮКасса = market leader)
 - Support for МИР cards, СБП (System of Fast Payments)
 - Auto-generation of fiscal receipts (54-ФЗ compliance)
 
 **Why Cookie-based A/B not database session?**
+
 - Faster (no DB roundtrip on every pageview)
 - Works before user registration
 - Standard approach for landing page optimization
 
 **Why separate quiz_sessions and quiz_results?**
+
 - User can retake test multiple times
 - Need history of all attempts
 - Analytics on retake rate
 
 **Why user_assignments table not field in users?**
+
 - Support multiple simultaneous A/B tests
 - Track assignment history
 - Easy analytics queries
 
 ## TODO (Post-MVP)
 
+### Completed ✅
+
+- [x] Quiz questions in database (not hardcoded)
+- [x] Personalization by gender (male/female)
+- [x] Satisfaction rating system
+- [x] Extended report structure (temporarily free)
+
+### High Priority 🔥
+
+- [ ] **Вставить полные тексты** из `_ЭНЕРГОТИПИНГ.txt` в 3 блока платной части
+- [ ] **Собрать обратную связь** от 10-20 тестировщиков
+- [ ] **Проанализировать статистику** удовлетворённости по типам
+- [ ] **Активировать ЮКассу** после получения положительных отзывов
+- [ ] **Яндекс.Метрика** — настроить цели и события
+- [ ] **Мобильная адаптация** — проверить и улучшить
+
+### Medium Priority 📋
+
 - [ ] Email sending (Unisender integration)
 - [ ] PDF generation (puppeteer or external service)
-- [ ] Admin dashboard (view A/B stats)
+- [ ] Admin dashboard (view satisfaction stats, A/B stats)
 - [ ] Rate limiting middleware
+- [ ] Персонализация по возрасту (18-25, 26-35, 36+)
+- [ ] Сохранение незавершенных квизов
 - [ ] Automated testing (Playwright E2E)
-- [ ] Quiz questions in database (not hardcoded)
+
+### Low Priority 💡
+
 - [ ] Multiple quiz types support
 - [ ] Referral system (optional)
 - [ ] Abandoned cart recovery (optional)
+- [ ] Анимации переходов между вопросами
+- [ ] Тёмная тема (Dark Mode)
 
 ## CONTACT & SUPPORT
 

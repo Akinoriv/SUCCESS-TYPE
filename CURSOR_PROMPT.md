@@ -30,61 +30,74 @@
 - API routes: RESTful (POST для создания, GET для чтения)
 - Commits: Conventional Commits (feat:, fix:, refactor:)
 
-## ФАЙЛЫ ДЛЯ СОЗДАНИЯ (В ПОРЯДКЕ ПРИОРИТЕТА)
+## СТАТУС РЕАЛИЗАЦИИ
 
-### БЛОК 1: Инфраструктура
+### ✅ БЛОК 1: Инфраструктура (100%)
 
-1. nuxt.config.ts — добавить modules: pinia, tailwindcss
-2. prisma/schema.prisma — 8 таблиц (см. PRISMA_SCHEMA.md)
-3. utils/db.ts — Prisma singleton
-4. .env — переменные окружения
+1. ✅ nuxt.config.ts
+2. ✅ prisma/schema.prisma — 8+ таблиц + Question
+3. ✅ utils/db.ts
+4. ✅ .env
 
-### БЛОК 2: Backend API
+### ✅ БЛОК 2: Backend API (90%)
 
-5. server/api/quiz/sessions.post.ts — создание quiz session
-6. server/api/quiz/answers.post.ts — сохранение ответов
-7. server/api/results/calculate.post.ts — расчёт результата (TODO: логика)
-8. server/api/results/satisfaction.post.ts — satisfaction rating
-9. server/api/payment/create.post.ts — создание платежа ЮКасса
-10. server/api/payment/webhook.post.ts — обработка webhook
-11. server/api/analytics/events.post.ts — логирование событий
-12. server/api/analytics/variants.get.ts — метрики A/B тестов
-13. server/api/ab-test/get-variants.get.ts — список вариантов
-14. server/api/ab-test/assign.post.ts — назначение варианта
-15. server/api/ab-test/content/[id].get.ts — контент варианта
+5. ✅ server/api/quiz/sessions.post.ts
+6. ✅ server/api/quiz/questions.get.ts — с персонализацией
+7. ✅ server/api/quiz/answers.post.ts
+8. ✅ server/api/results/calculate.post.ts — полная логика
+9. ✅ server/api/results/satisfaction.post.ts — с текстовыми отзывами
+10. ⏳ server/api/payment/create.post.ts — отложено после тестирования
+11. ⏳ server/api/payment/webhook.post.ts — отложено
+12. ⏳ server/api/analytics/events.post.ts — планируется
+13. ⏳ server/api/analytics/variants.get.ts — планируется
 
-### БЛОК 3: A/B Testing Middleware
+### ✅ БЛОК 3: Utils & Personalization (100%)
 
-16. server/middleware/ab-redirect.ts — редирект на landing variant
+14. ✅ utils/personalization.ts — personalizeQuestions, personalizeOptions
+15. ✅ utils/db.ts
 
-### БЛОК 4: Utils & Services
+### ✅ БЛОК 4: State Management (100%)
 
-17. utils/yookassa.ts — обёртка над YooCheckout API
-18. composables/useYandexMetrika.ts — composable для Метрики
-19. plugins/yandex-metrika.client.ts — инициализация Метрики
+16. ✅ stores/quiz.ts — Pinia store с sessionId, answers
 
-### БЛОК 5: State Management
+### ✅ БЛОК 5: UI Components (100%)
 
-20. stores/quiz.ts — Pinia store для квиза
+17. ✅ components/Quiz/QuestionCard.vue
+18. ✅ components/Quiz/ProgressBar.vue
 
-### БЛОК 6: UI Components
+### ✅ БЛОК 6: Pages (95%)
 
-21. components/Landing/HeroSection.vue — hero с CTA
-22. components/Landing/BenefitsSection.vue — блок преимуществ
-23. components/Quiz/QuestionCard.vue — карточка вопроса
-24. components/Quiz/ProgressBar.vue — прогресс-бар
-25. components/Results/SatisfactionRating.vue — 5-звёздочный рейтинг
+19. ✅ app/pages/index.vue — обновлённый landing с legal disclaimers
+20. ✅ app/pages/quiz/onboarding.vue — с согласием на обработку данных
+21. ✅ app/pages/quiz/questions.vue — с новым дизайном
+22. ✅ app/pages/quiz/result.vue — с полным дизайном и feedback формой
+23. ✅ app/pages/privacy.vue
+24. ✅ app/pages/terms.vue
+25. ✅ app/pages/disclaimer.vue
 
-### БЛОК 7: Pages
+### ✅ БЛОК 7: Seed Data (100%)
 
-26. pages/landing-[variant].vue — динамический landing
-27. pages/quiz/[id].vue — страница квиза
-28. pages/results/[id].vue — результаты теста
-29. pages/payment/[resultId].vue — оплата
+26. ✅ prisma/seed-quiz.ts — 14 вопросов с variations
 
-### БЛОК 8: Seed Data
+---
 
-30. prisma/seed.ts — тестовые данные (2 landing варианта)
+## СЛЕДУЮЩИЕ ЗАДАЧИ
+
+### 🔥 Высокий приоритет:
+
+1. **Вставить полные тексты** из `_ЭНЕРГОТИПИНГ.txt` в функции `getPlan30Days()`, `getMonetization()`, `getTeamBuilding()`
+2. **Протестировать на реальных пользователях** и собрать feedback
+3. **Проанализировать satisfactionScore** по типам результатов
+4. **Настроить Яндекс.Метрику** — цели, события, воронки
+5. **Мобильная адаптация** — проверить responsive design
+
+### 📋 Средний приоритет:
+
+6. **Активировать ЮКассу** после положительных отзывов (server/api/payment/)
+7. **Admin dashboard** для просмотра статистики
+8. **Email-уведомления** (Unisender)
+9. **PDF-генерация** для расширенных отчётов
+10. **A/B тестирование** landing pages
 
 ## ПРИ СОЗДАНИИ КАЖДОГО ФАЙЛА:
 
@@ -101,8 +114,11 @@
 
 ## ВАЖНО:
 
-- В calculateResultType() и generateResultData() логикуа подсчета результата теста.
+- В calculateResultType() и generateResultData() логика подсчета результата теста.
 - Webhook ЮКасса требует ngrok для локальной разработки
+- **Платная часть временно бесплатна** — для тестирования и сбора обратной связи
+- Все тексты результатов хранятся в `_ЭНЕРГОТИПИНГ.txt` — использовать как источник правды
+- Персонализация работает на уровне вопросов И ответов (male/female variations)
 
 ## ТЕСТИРОВАНИЕ:
 

@@ -78,22 +78,53 @@
               </button>
             </div>
           </div>
+
+          <!-- Privacy Agreement -->
+          <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <label class="flex items-start cursor-pointer">
+              <input
+                type="checkbox"
+                v-model="agreed"
+                class="mt-1 mr-3 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span class="text-sm text-gray-700">
+                Я соглашаюсь с
+                <NuxtLink
+                  to="/privacy"
+                  target="_blank"
+                  class="text-blue-600 hover:underline"
+                >
+                  политикой конфиденциальности
+                </NuxtLink>
+                и даю согласие на обработку моих данных для формирования
+                результата теста. Понимаю, что этот тест не является медицинским
+                или психологическим диагностическим инструментом.
+              </span>
+            </label>
+          </div>
         </div>
 
         <!-- Continue Button -->
         <div class="mt-8 text-center">
           <button
             @click="continueToQuestions"
-            :disabled="!profileData.gender"
+            :disabled="!canContinue"
             :class="[
               'px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-200',
-              profileData.gender
+              canContinue
                 ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed',
             ]"
           >
             Начать тест
           </button>
+
+          <p
+            v-if="!agreed && profileData.gender"
+            class="mt-3 text-sm text-red-600"
+          >
+            Необходимо согласие на обработку данных
+          </p>
         </div>
       </div>
     </div>
@@ -105,6 +136,13 @@
 const profileData = ref({
   gender: "",
   age: null,
+});
+
+const agreed = ref(false);
+
+// Computed
+const canContinue = computed(() => {
+  return profileData.value.gender && agreed.value;
 });
 
 // Age ranges

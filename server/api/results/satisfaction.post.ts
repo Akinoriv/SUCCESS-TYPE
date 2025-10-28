@@ -7,21 +7,21 @@ import { prisma } from "../../../utils/db";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { resultId, satisfactionScore } = body;
+    const { resultId, rating, feedback } = body;
 
     // Валидация входных данных
-    if (!resultId || satisfactionScore === undefined) {
+    if (!resultId || rating === undefined) {
       throw createError({
         statusCode: 400,
-        statusMessage: "resultId и satisfactionScore обязательны",
+        statusMessage: "resultId и rating обязательны",
       });
     }
 
     // Проверяем диапазон оценки (1-5)
-    if (satisfactionScore < 1 || satisfactionScore > 5) {
+    if (rating < 1 || rating > 5) {
       throw createError({
         statusCode: 400,
-        statusMessage: "satisfactionScore должен быть от 1 до 5",
+        statusMessage: "rating должен быть от 1 до 5",
       });
     }
 
@@ -37,11 +37,12 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Обновляем оценку удовлетворённости
+    // Обновляем оценку удовлетворённости и текст отзыва
     const updatedResult = await prisma.quizResult.update({
       where: { id: resultId },
       data: {
-        satisfactionScore,
+        satisfactionScore: rating,
+        satisfactionFeedback: feedback || null,
       },
     });
 
@@ -50,6 +51,7 @@ export default defineEventHandler(async (event) => {
       data: {
         resultId: updatedResult.id,
         satisfactionScore: updatedResult.satisfactionScore,
+        satisfactionFeedback: updatedResult.satisfactionFeedback,
       },
     };
   } catch (error) {

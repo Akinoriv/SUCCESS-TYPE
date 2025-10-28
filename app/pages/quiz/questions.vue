@@ -1,13 +1,22 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+  <div
+    class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8"
+  >
     <div class="container mx-auto px-4">
       <!-- Header -->
       <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">
-          Тест на тип личности
+        <div
+          class="inline-block bg-white px-6 py-2 rounded-full shadow-sm mb-4"
+        >
+          <p class="text-sm text-gray-600">
+            Вопрос {{ currentQuestionIndex + 1 }} из 14
+          </p>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          Узнай свой энерготип
         </h1>
-        <p class="text-lg text-gray-600">
-          Узнай свой тип и получи персональные рекомендации
+        <p class="text-gray-600">
+          Отвечай честно — чем точнее ответы, тем точнее результат
         </p>
       </div>
 
