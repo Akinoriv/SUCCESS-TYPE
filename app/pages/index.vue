@@ -14,19 +14,36 @@
           Пройди тест из 14 вопросов и получи персональные рекомендации
         </p>
 
-        <a
-          href="/quiz/new"
+        <NuxtLink
+          to="/quiz/onboarding"
           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors inline-block"
         >
           Начать тест
-        </a>
+        </NuxtLink>
       </div>
 
       <!-- Debug info -->
       <div class="mt-8 text-sm text-gray-500">
-        <p>Вопросов в базе: 14</p>
-        <p>API статус: ✅ Работает</p>
+        <p>Вопросов в базе: {{ questionCount }}</p>
+        <p>API статус: {{ apiStatus }}</p>
       </div>
     </div>
   </div>
 </template>
+
+<script setup>
+const questionCount = ref(0);
+const apiStatus = ref("Проверяем...");
+
+// Проверяем API
+onMounted(async () => {
+  try {
+    const response = await $fetch("/api/quiz/questions");
+    questionCount.value = response.data.questions.length;
+    apiStatus.value = "✅ Работает";
+  } catch (error) {
+    apiStatus.value = "❌ Ошибка";
+    console.error("API Error:", error);
+  }
+});
+</script>

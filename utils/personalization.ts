@@ -56,6 +56,39 @@ export function getPersonalizedText(
 }
 
 /**
+ * Персонализирует опции вопроса (варианты ответов)
+ * @param options - объект с опциями
+ * @param user - данные пользователя
+ * @returns персонализированные опции
+ */
+export function personalizeOptions(options: any, user?: User): any {
+  if (!options || typeof options !== "object") {
+    return options;
+  }
+
+  const personalizedOptions: any = {};
+
+  for (const [key, value] of Object.entries(options)) {
+    if (value && typeof value === "object") {
+      // Если у опции есть variations, персонализируем текст
+      if ((value as any).variations) {
+        personalizedOptions[key] = {
+          ...(value as any),
+          text: getPersonalizedText((value as any).variations, user),
+        };
+      } else {
+        // Иначе оставляем как есть
+        personalizedOptions[key] = value;
+      }
+    } else {
+      personalizedOptions[key] = value;
+    }
+  }
+
+  return personalizedOptions;
+}
+
+/**
  * Персонализирует массив вопросов
  * @param questions - массив вопросов с variations
  * @param user - данные пользователя
@@ -65,6 +98,7 @@ export function personalizeQuestions(questions: any[], user?: User): any[] {
   return questions.map((question) => ({
     ...question,
     text: getPersonalizedText(question.variations, user),
+    options: personalizeOptions(question.options, user),
   }));
 }
 

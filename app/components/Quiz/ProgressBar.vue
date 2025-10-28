@@ -25,22 +25,29 @@
   </div>
 </template>
 
-<script setup lang="ts">
-interface Props {
-  currentQuestion: number;
-  totalQuestions: number;
-  currentDimension?: string;
-}
-
-const props = defineProps<Props>();
+<script setup>
+const props = defineProps({
+  currentQuestion: {
+    type: Number,
+    required: true,
+  },
+  totalQuestions: {
+    type: Number,
+    required: true,
+  },
+  currentDimension: {
+    type: String,
+    default: "",
+  },
+});
 
 const progressPercentage = computed(() => {
   if (props.totalQuestions === 0) return 0;
   return (props.currentQuestion / props.totalQuestions) * 100;
 });
 
-const getDimensionLabel = (dimension: string): string => {
-  const labels: Record<string, string> = {
+const getDimensionLabel = (dimension) => {
+  const labels = {
     energy: "Энергия",
     focus: "Фокус",
   };

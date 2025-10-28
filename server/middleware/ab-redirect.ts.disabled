@@ -48,6 +48,15 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    // Создаём пользователя если его нет
+    await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+      },
+    });
+
     // Сохраняем назначение варианта
     await prisma.userAssignment.create({
       data: {

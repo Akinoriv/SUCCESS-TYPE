@@ -85,49 +85,29 @@
   </div>
 </template>
 
-<script setup lang="ts">
-interface QuestionOption {
-  text: string;
-  score: number;
-}
+<script setup>
+const props = defineProps({
+  question: {
+    type: Object,
+    required: true,
+  },
+  selectedAnswer: {
+    type: String,
+    default: "",
+  },
+});
 
-interface ScaleOptions {
-  min: number;
-  max: number;
-  labels?: Record<number, string>;
-}
+const emit = defineEmits(["answer", "continue"]);
 
-interface Question {
-  id: string;
-  order: number;
-  text: string;
-  type: "choice" | "scale";
-  options: Record<string, QuestionOption> | ScaleOptions;
-  dimension: string;
-}
+const selectedAnswer = ref(props.selectedAnswer || "");
 
-interface Props {
-  question: Question;
-  selectedAnswer?: string;
-}
-
-interface Emits {
-  (e: "answer", answer: string): void;
-  (e: "continue"): void;
-}
-
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
-
-const selectedAnswer = ref<string>(props.selectedAnswer || "");
-
-const selectAnswer = (answer: string) => {
+const selectAnswer = (answer) => {
   selectedAnswer.value = answer;
   emit("answer", answer);
 };
 
-const updateScaleAnswer = (event: Event) => {
-  const target = event.target as HTMLInputElement;
+const updateScaleAnswer = (event) => {
+  const target = event.target;
   selectedAnswer.value = target.value;
   emit("answer", target.value);
 };
@@ -138,9 +118,9 @@ const continueQuiz = () => {
   }
 };
 
-const getScaleLabel = (value: number): string => {
-  if (props.question.type === "scale" && "labels" in props.question.options) {
-    return props.question.options.labels?.[value] || "";
+const getScaleLabel = (value) => {
+  if (props.question.type === "scale" && props.question.options.labels) {
+    return props.question.options.labels[value] || "";
   }
   return "";
 };

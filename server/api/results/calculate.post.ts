@@ -39,10 +39,22 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // TODO: Реализовать логику расчёта типа результата
-    const resultType = calculateResultType(session.answers);
+    // Получаем все вопросы для расчета
+    const questions = await prisma.question.findMany({
+      orderBy: { order: "asc" },
+      select: {
+        id: true,
+        order: true,
+        dimension: true,
+        options: true,
+        type: true,
+      },
+    });
 
-    // TODO: Реализовать генерацию данных результата
+    // Расчёт типа результата
+    const resultType = calculateResultType(session.answers, questions);
+
+    // Генерация данных результата
     const resultData = generateResultData(resultType);
 
     // Создаём результат
@@ -80,123 +92,71 @@ export default defineEventHandler(async (event) => {
 });
 
 /**
- * TODO: Реализовать логику определения типа результата
+ * Расчёт типа результата на основе ответов пользователя
  * @param answers - массив ответов пользователя
- * @returns тип результата (например, 'type_A', 'type_B', etc.)
+ * @param questions - массив вопросов из БД
+ * @returns тип результата ('impulse', 'focus', 'titan', 'aether')
  */
-function calculateResultType(answers: any[]) {
-  let energyScore = 0; // Вопросы 1-7
-  let focusScore = 0; // Вопросы 8-14
+function calculateResultType(answers: any[], questions: any[]) {
+  let energyScore = 0;
+  let focusScore = 0;
 
+  // Создаём карту вопросов для быстрого доступа
+  const questionMap = new Map(
+    questions.map((q) => [q.id, { ...q, options: q.options as any }])
+  );
+
+  // Проходим по каждому ответу
   answers.forEach((answer) => {
-    const qId = answer.questionId;
+    const question = questionMap.get(answer.questionId);
+    if (!question) return;
+
+    const dimension = question.dimension;
     const choice = answer.answer;
 
-    // ЭНЕРГИЯ (вопросы 1-7)
-    if (qId === "q1") {
-      // Часы работы
-      if (choice === "А") energyScore += 1;
-      if (choice === "Б") energyScore += 2;
-      if (choice === "В") energyScore += 3;
-      if (choice === "Г") energyScore += 4;
-    }
-    if (qId === "q2") {
-      // Прокрастинация
-      if (choice === "А") energyScore += 4;
-      if (choice === "Б") energyScore += 2;
-      if (choice === "В") energyScore += 1;
-      if (choice === "Г") energyScore += 1;
-    }
-    if (qId === "q3") {
-      // Реализация идей
-      if (choice === "А") energyScore += 4;
-      if (choice === "Б") energyScore += 2;
-      if (choice === "В") energyScore += 3;
-      if (choice === "Г") energyScore += 1;
-    }
-    if (qId === "q4") {
-      // Спорт
-      if (choice === "А") energyScore += 3;
-      if (choice === "Б") energyScore += 1;
-      if (choice === "В") energyScore += 4;
-      if (choice === "Г") energyScore += 1;
-    }
-    if (qId === "q5") {
-      // Картинка
-      if (choice === "А") energyScore += 4;
-      if (choice === "Б") energyScore += 2;
-      if (choice === "В") energyScore += 4;
-      if (choice === "Г") energyScore += 1;
-    }
-    if (qId === "q6") {
-      // Мотивация
-      if (choice === "А") energyScore += 4;
-      if (choice === "Б") energyScore += 4;
-      if (choice === "В") energyScore += 2;
-      if (choice === "Г") energyScore += 1;
-    }
-    if (qId === "q7") {
-      // Ленивость (шкала 1-10)
+    // Для scale типа
+    if (question.type === "scale") {
       const value = parseInt(choice) || 5;
-      if (value <= 3) energyScore += 4;
-      else if (value <= 5) energyScore += 3;
-      else if (value <= 7) energyScore += 2;
-      else energyScore += 1;
-    }
+      let score = 0;
 
-    // ФОКУС (вопросы 8-14)
-    if (qId === "q8") {
-      // Удержание фокуса (шкала 1-10)
-      const value = parseInt(choice) || 5;
-      if (value <= 3) focusScore += 4;
-      else if (value <= 6) focusScore += 2;
-      else focusScore += 1;
+      // Логика подсчета для scale вопросов
+      if (dimension === "energy") {
+        // Вопрос 7: ленивость (инвертируем - меньше ленивости = больше энергии)
+        if (value <= 3) score = 4;
+        else if (value <= 5) score = 3;
+        else if (value <= 7) score = 2;
+        else score = 1;
+        energyScore += score;
+      } else if (dimension === "focus") {
+        // Вопрос 8: сложность удержания фокуса (инвертируем - легче фокус = больше баллов)
+        if (value <= 3) score = 4;
+        else if (value <= 6) score = 2;
+        else score = 1;
+        focusScore += score;
+      }
     }
-    if (qId === "q9") {
-      // Перерывы
-      if (choice === "А") focusScore += 1;
-      if (choice === "Б") focusScore += 2;
-      if (choice === "В") focusScore += 3;
-      if (choice === "Г") focusScore += 4;
-    }
-    if (qId === "q10") {
-      // Дисциплина
-      if (choice === "А") focusScore += 1;
-      if (choice === "Б") focusScore += 2;
-      if (choice === "В") focusScore += 3;
-      if (choice === "Г") focusScore += 4;
-    }
-    if (qId === "q11") {
-      // Новое дело
-      if (choice === "А") focusScore += 1;
-      if (choice === "Б") focusScore += 4;
-      if (choice === "В") focusScore += 3;
-      if (choice === "Г") focusScore += 1;
-    }
-    if (qId === "q12") {
-      // Проектов одновременно
-      if (choice === "А") focusScore += 1;
-      if (choice === "Б") focusScore += 3;
-      if (choice === "В") focusScore += 4;
-      if (choice === "Г") focusScore += 1;
-    }
-    if (qId === "q13") {
-      // Возврат к задаче
-      if (choice === "А") focusScore += 3;
-      if (choice === "Б") focusScore += 4;
-      if (choice === "В") focusScore += 1;
-      if (choice === "Г") focusScore += 2;
-    }
-    if (qId === "q14") {
-      // Предпочтения работы
-      if (choice === "А") focusScore += 1;
-      if (choice === "Б") focusScore += 4;
-      if (choice === "В") focusScore += 2;
-      if (choice === "Г") focusScore += 3;
+    // Для choice типа используем score из опций
+    else if (question.type === "choice") {
+      const options = question.options;
+      if (
+        options &&
+        options[choice] &&
+        typeof options[choice].score === "number"
+      ) {
+        const score = options[choice].score;
+
+        if (dimension === "energy") {
+          energyScore += score;
+        } else if (dimension === "focus") {
+          focusScore += score;
+        }
+      }
     }
   });
 
   // Определяем тип по матрице
+  // Максимум для каждого измерения: 7 вопросов * 4 балла = 28 баллов
+  // Порог "высокого" уровня: 18 баллов (около 64%)
   const highEnergy = energyScore >= 18;
   const highFocus = focusScore >= 18;
 
@@ -207,7 +167,7 @@ function calculateResultType(answers: any[]) {
 }
 
 /**
- * TODO: Реализовать генерацию данных результата
+ * Генерация данных результата на основе типа
  * @param resultType - тип результата
  * @returns объект с данными результата
  */

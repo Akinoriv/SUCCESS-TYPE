@@ -18,7 +18,10 @@ export default defineEventHandler(async (event) => {
     }
 
     // Получаем IP адрес пользователя
-    const ipAddress = getClientIP(event);
+    const ipAddress =
+      getHeader(event, "x-forwarded-for") ||
+      getHeader(event, "x-real-ip") ||
+      "unknown";
 
     // Создаём или обновляем пользователя с profileData
     let user = await prisma.user.findUnique({
