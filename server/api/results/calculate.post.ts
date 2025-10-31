@@ -154,6 +154,13 @@ function calculateResultType(answers: any[], questions: any[]) {
     }
   });
 
+  // Логируем для отладки
+  console.log('\n=== РАСЧЕТ РЕЗУЛЬТАТА ===');
+  console.log(`SessionId: ${sessionId}`);
+  console.log(`Energy Score: ${energyScore}/28`);
+  console.log(`Focus Score: ${focusScore}/28`);
+  console.log(`Answers count: ${answers.length}`);
+
   // Определяем тип по матрице
   // Максимум для каждого измерения: 7 вопросов * 4 балла = 28 баллов
   // Порог "высокого" уровня: 21 баллов (75% от максимума)
@@ -162,10 +169,18 @@ function calculateResultType(answers: any[], questions: any[]) {
   const highEnergy = energyScore >= 21;
   const highFocus = focusScore >= 21;
 
-  if (highEnergy && !highFocus) return "impulse";
-  if (!highEnergy && highFocus) return "focus";
-  if (highEnergy && highFocus) return "titan";
-  return "aether";
+  console.log(`High Energy (>=21): ${highEnergy}`);
+  console.log(`High Focus (>=21): ${highFocus}`);
+
+  let resultType = "aether";
+  if (highEnergy && !highFocus) resultType = "impulse";
+  else if (!highEnergy && highFocus) resultType = "focus";
+  else if (highEnergy && highFocus) resultType = "titan";
+
+  console.log(`Result Type: ${resultType.toUpperCase()}`);
+  console.log('========================\n');
+
+  return resultType;
 }
 
 /**
