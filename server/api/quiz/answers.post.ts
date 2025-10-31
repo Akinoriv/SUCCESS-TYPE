@@ -29,6 +29,11 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    // Удаляем старые ответы для этой сессии (чтобы избежать дубликатов)
+    await prisma.testAnswer.deleteMany({
+      where: { sessionId },
+    });
+
     // Подготавливаем данные для bulk insert
     const answersData = answers.map((answer: any) => ({
       sessionId,
