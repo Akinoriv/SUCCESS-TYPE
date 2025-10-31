@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
     });
 
     // Расчёт типа результата
-    const resultType = calculateResultType(session.answers, questions);
+    const resultType = calculateResultType(session.answers, questions, sessionId);
 
     // Генерация данных результата
     const resultData = generateResultData(resultType);
@@ -95,9 +95,10 @@ export default defineEventHandler(async (event) => {
  * Расчёт типа результата на основе ответов пользователя
  * @param answers - массив ответов пользователя
  * @param questions - массив вопросов из БД
+ * @param sessionId - ID сессии для логирования
  * @returns тип результата ('impulse', 'focus', 'titan', 'aether')
  */
-function calculateResultType(answers: any[], questions: any[]) {
+function calculateResultType(answers: any[], questions: any[], sessionId: string) {
   let energyScore = 0;
   let focusScore = 0;
 
