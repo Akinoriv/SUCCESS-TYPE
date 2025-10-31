@@ -2,14 +2,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Starting seed...");
-
   // Очищаем существующие вопросы
-  console.log("Clearing existing questions...");
   await prisma.question.deleteMany({});
 
   // Создаём 14 вопросов из теста
-  console.log("Creating quiz questions...");
   const questions = [
     {
       order: 1,
@@ -63,6 +59,11 @@ async function main() {
       options: {
         А: {
           text: "Забыл про нее, увлечен чем-то новым",
+          variations: {
+            default: "Забыл про нее, увлечен чем-то новым",
+            male: "Забыл про нее, увлечен чем-то новым",
+            female: "Забыла про нее, увлечена чем-то новым",
+          },
           score: 4,
         },
         Б: { text: "Все еще изучаешь и пишешь стратегию", score: 2 },
@@ -204,6 +205,11 @@ async function main() {
       options: {
         А: {
           text: "Очень сложно, постоянно срываюсь",
+          variations: {
+            default: "Очень сложно, постоянно срываюсь",
+            male: "Очень сложно, постоянно срываюсь",
+            female: "Очень сложно, постоянно срываюсь",
+          },
           score: 1,
         },
         Б: { text: "Могу, если очень интересно", score: 2 },
@@ -290,13 +296,9 @@ async function main() {
     data: questions,
   });
 
-  console.log("✅ Quiz questions created: 14 questions");
-  console.log("✅ Seed completed successfully!");
+  console.log("Quiz questions seed completed");
 }
 
 main()
-  .catch((error) => {
-    console.error("❌ Seed failed:", error);
-    process.exit(1);
-  })
+  .catch(console.error)
   .finally(() => prisma.$disconnect());
