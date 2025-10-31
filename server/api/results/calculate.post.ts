@@ -133,7 +133,7 @@ function calculateResultType(answers: any[], questions: any[]) {
         else if (value <= 6) score = 2;
         else score = 1;
         focusScore += score;
-      }
+    }
     }
     // Для choice типа используем score из опций
     else if (question.type === "choice") {
