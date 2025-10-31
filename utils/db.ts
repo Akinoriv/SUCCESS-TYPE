@@ -16,11 +16,9 @@ if (process.env.NODE_ENV !== 'production') {
   globalThis.__prisma = prisma
 }
 
-// Проверка подключения к БД
-prisma.$connect()
-  .then(() => {
-    console.log('✅ Database connected successfully')
-  })
-  .catch((error) => {
-    console.error('❌ Database connection failed:', error)
-  })
+/**
+ * Graceful shutdown при завершении процесса
+ */
+process.on('beforeExit', async () => {
+  await prisma.$disconnect()
+})
