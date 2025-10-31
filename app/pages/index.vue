@@ -38,7 +38,7 @@
             class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight animate-fade-in-up"
           >
             Почему ты устаёшь быстрее других?
-          </h1>
+      </h1>
 
           <p
             class="text-xl md:text-2xl text-white/90 mb-4 animate-fade-in-up animation-delay-200"
@@ -644,7 +644,7 @@
           <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Частые вопросы
-            </h2>
+        </h2>
           </div>
 
           <div class="space-y-4">
@@ -816,10 +816,10 @@
           <p class="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl mx-auto">
             Узнай свой энерготип за 5 минут. Получи честные ответы про себя.
             Начни работать по-своему.
-          </p>
+        </p>
 
-          <NuxtLink
-            to="/quiz/onboarding"
+        <NuxtLink
+          to="/quiz/onboarding"
             class="inline-flex items-center gap-2 bg-white text-gray-900 font-bold px-12 py-6 rounded-xl text-xl shadow-2xl hover:shadow-white/30 transition-all duration-300 hover:scale-105"
           >
             Пройти тест бесплатно
@@ -836,7 +836,7 @@
                 d="M13 7l5 5m0 0l-5 5m5-5H6"
               ></path>
             </svg>
-          </NuxtLink>
+        </NuxtLink>
 
           <p class="text-white/60 mt-6 text-sm">
             Присоединяйся к тем, кто уже прошёл тест
@@ -943,8 +943,8 @@
               диагностическим инструментом.
             </p>
           </div>
-        </div>
       </div>
+    </div>
     </footer>
   </div>
 </template>
