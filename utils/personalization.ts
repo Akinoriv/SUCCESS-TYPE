@@ -10,9 +10,25 @@ export interface User {
 }
 
 /**
+ * Определяет возрастную группу пользователя
+ */
+export function getAgeGroup(age?: number): string | null {
+  if (!age) return null;
+  
+  if (age < 26) return "young";      // 18-25
+  if (age < 46) return "adult";      // 26-45
+  return "mature";                   // 46+
+}
+
+/**
  * Получает ключи персонализации для пользователя
  * @param user - данные пользователя
  * @returns массив ключей персонализации в порядке приоритета
+ * 
+ * Примеры:
+ * - female, 23 → ["female_young", "female", "young", "default"]
+ * - male, 35 → ["male_adult", "male", "adult", "default"]
+ * - unknown → ["default"]
  */
 export function getPersonalizationKey(user?: User): string[] {
   if (!user) {
@@ -20,13 +36,25 @@ export function getPersonalizationKey(user?: User): string[] {
   }
 
   const keys: string[] = [];
+  const gender = user.gender?.toLowerCase();
+  const ageGroup = getAgeGroup(user.age);
 
-  // Добавляем ключи в порядке приоритета
-  if (user.gender) {
-    keys.push(user.gender.toLowerCase());
+  // 1. Комбинация: gender_ageGroup (наивысший приоритет)
+  if (gender && ageGroup) {
+    keys.push(`${gender}_${ageGroup}`);
   }
 
-  // Всегда добавляем default как fallback
+  // 2. Только gender
+  if (gender) {
+    keys.push(gender);
+  }
+
+  // 3. Только ageGroup
+  if (ageGroup) {
+    keys.push(ageGroup);
+  }
+
+  // 4. Всегда добавляем default как fallback
   keys.push("default");
 
   return keys;
