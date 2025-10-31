@@ -33,7 +33,7 @@ git push origin main
 В разделе **Variables**:
 
 ```
-DATABASE_URL=file:./prisma/production.db
+DATABASE_URL=postgresql://postgres:DcRBCUYVrvVprovkjxGYtlaeoWOidoIC@switchback.proxy.rlwy.net:56459/railway?sslmode=require
 NODE_ENV=production
 PORT=3000
 ```
@@ -100,6 +100,17 @@ railway link
 # Открой Prisma Studio
 railway run npx prisma studio
 ```
+
+---
+
+## 🖥️ Локальная разработка с Railway БД
+
+1. Скопируй файл `.env.example` в `.env`
+2. Проверь, что в `DATABASE_URL` указан Railway URL (`postgresql://postgres:...switchback.proxy.rlwy.net:56459/railway?sslmode=require`)
+3. Прогони миграции локально: `npx prisma migrate deploy`
+4. Запусти локальный сервер: `npm run dev`
+
+> ⚠️ Храни `.env` в секрете: файл уже в `.gitignore` и не попадет в репозиторий. Если URL сменится в Railway, обнови `.env` и `.env.example`.
 
 ---
 
