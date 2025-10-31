@@ -1,19 +1,17 @@
 [phases.setup]
-nixPkgs = ["nodejs_22", "openssl"]
+nixPkgs = ["nodejs_23", "openssl"]
 
 [phases.install]
 cmds = [
-  "NUXT_NO_OXC=1 npm install --omit=optional --legacy-peer-deps",
+  "npm install --legacy-peer-deps",
+  "npm rebuild oxc-parser",
   "npx prisma generate"
 ]
 
 [phases.build]
 cmds = [
-  "NUXT_NO_OXC=1 npm run build"
+  "npm run build"
 ]
 
 [start]
-cmd = "NUXT_NO_OXC=1 npx prisma migrate deploy && node .output/server/index.mjs"
-
-[variables]
-NUXT_NO_OXC = "1"
+cmd = "npx prisma migrate deploy && node .output/server/index.mjs"

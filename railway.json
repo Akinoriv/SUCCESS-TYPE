@@ -2,10 +2,10 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "NUXT_NO_OXC=1 npm install --omit=optional --legacy-peer-deps && npx prisma generate && NUXT_NO_OXC=1 npm run build"
+    "buildCommand": "npm install --legacy-peer-deps && npm rebuild oxc-parser && npx prisma generate && npm run build"
   },
   "deploy": {
-    "startCommand": "NUXT_NO_OXC=1 npx prisma migrate deploy && node .output/server/index.mjs",
+    "startCommand": "npx prisma migrate deploy && node .output/server/index.mjs",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
