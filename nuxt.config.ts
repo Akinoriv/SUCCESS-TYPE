@@ -23,5 +23,25 @@ export default defineNuxtConfig({
     experimental: {
       wasm: true,
     },
+    prerender: {
+      crawlLinks: true,
+      routes: ["/"],
+    },
+  },
+
+  routeRules: {
+    // Главная страница - кэшировать на 1 час
+    "/": { swr: 3600 },
+    // API - не кэшировать
+    "/api/**": { cache: false },
+    // Статические страницы - кэшировать на 1 день
+    "/privacy": { swr: 86400 },
+    "/terms": { swr: 86400 },
+    "/disclaimer": { swr: 86400 },
+  },
+
+  experimental: {
+    payloadExtraction: false,
+    renderJsonPayloads: false,
   },
 });
