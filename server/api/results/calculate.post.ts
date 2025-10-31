@@ -156,9 +156,11 @@ function calculateResultType(answers: any[], questions: any[]) {
 
   // Определяем тип по матрице
   // Максимум для каждого измерения: 7 вопросов * 4 балла = 28 баллов
-  // Порог "высокого" уровня: 18 баллов (около 64%)
-  const highEnergy = energyScore >= 18;
-  const highFocus = focusScore >= 18;
+  // Порог "высокого" уровня: 21 баллов (75% от максимума)
+  // При среднем 17.3/17.0 это дает правильное распределение:
+  // ИМПУЛЬС ~25%, ФОКУС ~25%, ТИТАН ~10-15% (редко!), ЭФИР ~35-40%
+  const highEnergy = energyScore >= 21;
+  const highFocus = focusScore >= 21;
 
   if (highEnergy && !highFocus) return "impulse";
   if (!highEnergy && highFocus) return "focus";
