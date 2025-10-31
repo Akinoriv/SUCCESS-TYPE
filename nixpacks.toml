@@ -1,15 +1,15 @@
 [phases.setup]
-nixPkgs = ["nodejs_20", "openssl"]
+nixPkgs = ["nodejs_20", "openssl", "libuuid"]
 
 [phases.install]
-cmds = ["npm ci"]
-
-[phases.build]
 cmds = [
-  "npx prisma generate",
-  "npm run build"
+  "npm install",
+  "npx prisma generate"
 ]
 
+[phases.build]
+cmds = ["npm run build"]
+
 [start]
-cmd = "npx prisma migrate deploy && npm run start"
+cmd = "npx prisma migrate deploy && npx prisma db seed && node .output/server/index.mjs"
 
