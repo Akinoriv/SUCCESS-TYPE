@@ -9,7 +9,7 @@
           class="inline-block bg-white px-6 py-2 rounded-full shadow-sm mb-4"
         >
           <p class="text-sm text-gray-600">
-            Вопрос {{ currentQuestionIndex + 1 }} из 14
+            Вопрос {{ currentQuestionIndex + 1 }} из 12
           </p>
         </div>
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
@@ -23,7 +23,7 @@
       <!-- Progress Bar -->
       <QuizProgressBar
         :current-question="currentQuestionIndex + 1"
-        :total-questions="14"
+        :total-questions="12"
         :current-dimension="currentQuestion?.dimension"
       />
 
