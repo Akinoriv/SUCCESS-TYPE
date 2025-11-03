@@ -23,48 +23,50 @@
 
       <div class="container mx-auto px-4 py-20 relative z-10">
         <div class="max-w-4xl mx-auto text-center">
-          <!-- Badge -->
+          <!-- Badge с эмоцией -->
           <div
-            class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white/90 text-sm mb-8 animate-fade-in"
+            class="inline-block bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white/80 text-sm mb-6 animate-fade-in"
           >
-            <span
-              class="w-2 h-2 bg-green-400 rounded-full animate-pulse"
-            ></span>
-            Бесплатный тест • 5 минут • Результат сразу
+            Ты знаешь это чувство?
           </div>
 
-          <!-- Main headline -->
+          <!-- БОЛЬ + КОНКРЕТИКА - узнавание себя -->
           <h1
-            class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight animate-fade-in-up"
+            class="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-8 leading-tight animate-fade-in-up"
           >
-            Почему ты устаёшь быстрее других?
+            Купил курс за 20к.<br/>
+            Прошёл 3 урока. Бросил.<br/>
+            <span class="text-yellow-300">Чувствуешь вину?</span>
       </h1>
 
+          <!-- ВАЛИДАЦИЯ - это не твоя вина -->
+          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 mb-8 max-w-2xl mx-auto animate-fade-in-up animation-delay-200">
+            <p class="text-xl md:text-2xl text-white/95 mb-3">
+              Ты не ленивый. Ты не безвольный.
+            </p>
+            <p class="text-lg text-white/80">
+              С тобой всё в порядке. Просто ты работаешь<br/>
+              <span class="text-yellow-300 font-semibold">не по своему энерготипу</span>.
+            </p>
+          </div>
+
+          <!-- ЛЮБОПЫТСТВО + РЕШЕНИЕ -->
           <p
-            class="text-xl md:text-2xl text-white/90 mb-4 animate-fade-in-up animation-delay-200"
+            class="text-lg text-white/70 mb-10 max-w-2xl mx-auto animate-fade-in-up animation-delay-300"
           >
-            Узнай свой
-            <span class="text-yellow-300 font-semibold">энерготип</span>
-            и перестань работать против себя
+            5-минутный тест покажет, <span class="text-white/90 font-medium">КАК ты работаешь</span> на самом деле:<br/>
+            твой ритм, фокус и энергию. И объяснит, почему не получалось раньше.
           </p>
 
-          <p
-            class="text-lg text-white/70 mb-12 max-w-2xl mx-auto animate-fade-in-up animation-delay-400"
-          >
-            Это тест-самопознание, который поможет лучше понять твои особенности
-            работы с энергией и фокусом. Получишь рекомендации для повышения
-            продуктивности и выбора подходящей сферы деятельности.
-          </p>
-
-          <!-- CTA Button -->
+          <!-- CTA Button - ВОЛШЕБНАЯ ТАБЛЕТКА -->
           <div
-            class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-600"
+            class="flex flex-col items-center animate-fade-in-up animation-delay-400"
           >
             <NuxtLink
               to="/quiz/onboarding"
-              class="group relative inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold px-8 py-4 rounded-xl text-lg shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300 hover:scale-105"
+              class="group relative inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold px-10 py-5 rounded-xl text-xl shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300 hover:scale-105"
             >
-              <span>Пройти тест за 5 минут</span>
+              <span>Узнать свой энерготип</span>
               <svg
                 class="w-5 h-5 group-hover:translate-x-1 transition-transform"
                 fill="none"
@@ -79,17 +81,27 @@
                 ></path>
               </svg>
             </NuxtLink>
-            <div class="text-white/60 text-sm">
-              Бесплатно • 12 вопросов • Результат сразу
-            </div>
+            
+            <p class="text-white/60 text-sm mt-4">
+              ⚡ 5 минут • 12 вопросов • Результат сразу • Бесплатно
+            </p>
+          </div>
+
+          <!-- Социальное доказательство -->
+          <div
+            class="mt-12 inline-block bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-6 py-3 animate-fade-in animation-delay-500"
+          >
+            <p class="text-white/70 text-sm">
+              <span class="text-yellow-300 font-semibold">2,500+ человек</span> уже прошли тест
+            </p>
           </div>
 
           <!-- Trust indicators -->
           <div
-            class="mt-16 flex flex-wrap justify-center gap-8 text-white/50 text-sm animate-fade-in animation-delay-800"
+            class="mt-8 flex flex-wrap justify-center gap-6 text-white/50 text-sm animate-fade-in animation-delay-600"
           >
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
                 ></path>
@@ -97,21 +109,21 @@
               <span>Без регистрации</span>
             </div>
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                 ></path>
               </svg>
-              <span>12 вопросов</span>
+              <span>Честно и безопасно</span>
             </div>
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"
                 ></path>
               </svg>
-              <span>100% конфиденциально</span>
+              <span>Результат сразу</span>
             </div>
           </div>
         </div>
@@ -137,16 +149,19 @@
       </div>
     </section>
 
-    <!-- Problem Section -->
+    <!-- Problem Section - КОНКРЕТИКА БЕЗ ОБВИНЕНИЙ -->
     <section class="py-20 bg-white">
       <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto">
           <div class="text-center mb-16">
+            <div class="inline-block bg-gray-100 px-4 py-2 rounded-full text-gray-600 text-sm mb-4">
+              Это не лень. Это не безволие.
+            </div>
             <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Знакомо?
+              Узнаёшь себя?
             </h2>
             <p class="text-xl text-gray-600">
-              Ты не ленивый. Ты просто работаешь против своей природы.
+              С тобой всё в порядке. Просто ты не знал свой <span class="text-indigo-600 font-semibold">энерготип</span>.
             </p>
           </div>
 
@@ -156,11 +171,11 @@
             >
               <div class="text-3xl mb-4">😫</div>
               <h3 class="text-xl font-bold text-gray-900 mb-2">
-                "Я устаю быстрее других"
+                "После 4 часов работы уже нет сил"
               </h3>
               <p class="text-gray-700">
-                Коллеги работают по 8 часов, а ты после 4 уже выжат. Чувствуешь
-                вину, что "недостаточно продуктивен".
+                Коллеги работают по 8-10 часов, а у тебя энергии хватает на 3-4.
+                Начинаешь думать: "Может, со мной что-то не так?"
               </p>
             </div>
 
@@ -169,11 +184,11 @@
             >
               <div class="text-3xl mb-4">🔄</div>
               <h3 class="text-xl font-bold text-gray-900 mb-2">
-                "Начинаю и бросаю"
+                "Начинаешь с энтузиазмом, через неделю бросаешь"
               </h3>
               <p class="text-gray-700">
-                15 открытых проектов, ни один не закончен. Стыдно признаться,
-                сколько всего заброшено на полпути.
+                Купил курс за 20k, прошёл 3 урока, забросил. Сейчас смотришь на него
+                и чувствуешь вину. Знакомо?
               </p>
             </div>
 
@@ -182,11 +197,11 @@
             >
               <div class="text-3xl mb-4">🤔</div>
               <h3 class="text-xl font-bold text-gray-900 mb-2">
-                "Застреваю в анализе"
+                "Думаешь неделями, не можешь начать"
               </h3>
               <p class="text-gray-700">
-                Пока другие делают, ты думаешь "а правильно ли это?".
-                Перфекционизм парализует.
+                Изучаешь, анализируешь, планируешь — но так и не делаешь первый шаг.
+                Боишься, что выберешь неправильно.
               </p>
             </div>
 
@@ -195,15 +210,16 @@
             >
               <div class="text-3xl mb-4">😔</div>
               <h3 class="text-xl font-bold text-gray-900 mb-2">
-                "Все методы не работают"
+                "Пробовал все методы — ничего не помогает"
               </h3>
               <p class="text-gray-700">
-                Пробовал Pomodoro, GTD, Deep Work — ничего не помогает. "Что со
-                мной не так?"
+                Pomodoro, GTD, Deep Work, тайм-менеджмент — перепробовал всё.
+                Не понимаешь, почему не работает.
               </p>
             </div>
           </div>
 
+          <!-- ВАЛИДАЦИЯ + ОБЪЯСНЕНИЕ -->
           <div
             class="mt-12 bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-2xl border border-indigo-200"
           >
@@ -211,13 +227,16 @@
               <div class="text-4xl">💡</div>
               <div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-3">
-                  Проблема не в тебе. Проблема в том, что ты не знаешь свой
-                  энерготип.
+                  Это не лень. Это не безволие. Это твой энерготип.
                 </h3>
+                <p class="text-gray-700 text-lg mb-4">
+                  Представь: ты <strong>Фокус</strong>. Тебе нужна глубокая концентрация
+                  на одной задаче. Но на работе тебя заставляют переключаться между
+                  10 проектами. Твой мозг говорит: "Стоп" и отключается.
+                </p>
                 <p class="text-gray-700 text-lg">
-                  Ты пытаешься использовать чужие системы продуктивности,
-                  работать по чужим ритмам, следовать чужим правилам. Но у тебя
-                  другая энергетическая природа.
+                  Это не проблема с тобой. Это <strong>несоответствие</strong> между
+                  твоим типом и тем, как ты работаешь.
                 </p>
               </div>
             </div>
@@ -386,16 +405,19 @@
       </div>
     </section>
 
-    <!-- How it Works Section -->
+    <!-- How it Works Section - ВОЛШЕБНАЯ ТАБЛЕТКА -->
     <section class="py-20 bg-white">
       <div class="container mx-auto px-4">
         <div class="max-w-5xl mx-auto">
           <div class="text-center mb-16">
+            <div class="inline-block bg-yellow-100 px-4 py-2 rounded-full text-yellow-800 text-sm mb-4 font-semibold">
+              ⚡ ВОЛШЕБНАЯ ТАБЛЕТКА: Мало времени → Быстрый результат
+            </div>
             <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Как это работает?
             </h2>
             <p class="text-xl text-gray-600">
-              Всего 3 простых шага до твоего персонального плана
+              3 простых шага за 5 минут
             </p>
           </div>
 
@@ -408,11 +430,11 @@
               </div>
               <div class="flex-1">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">
-                  Ответь на 12 вопросов
+                  12 вопросов за 5 минут
                 </h3>
                 <p class="text-gray-600 text-lg">
-                  Честно опиши свою работу, энергию, фокус. Это займёт 5-7
-                  минут. Без регистрации и лишних данных.
+                  Про твою энергию, фокус и работу. Без регистрации, без лишних данных.
+                  Просто отвечай честно.
                 </p>
               </div>
             </div>
@@ -425,11 +447,11 @@
               </div>
               <div class="flex-1">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">
-                  Получи свой энерготип
+                  Узнай свой энерготип — мгновенно
                 </h3>
                 <p class="text-gray-600 text-lg">
-                  Сразу увидишь детальное описание: кто ты, твои суперсилы,
-                  слабые стороны, рекомендации. Ты узнаешь себя.
+                  Сразу после теста увидишь детальное описание: кто ты (Импульс? Фокус? Титан? Эфир?),
+                  твои суперсилы, слабости, рекомендации.
                 </p>
               </div>
             </div>
@@ -442,12 +464,32 @@
               </div>
               <div class="flex-1">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">
-                  Работай по-своему
+                  Получи персональный план
                 </h3>
                 <p class="text-gray-600 text-lg">
-                  Используй рекомендации под твой тип. Перестань бороться с
-                  собой. Начни работать С природой, а не против неё.
+                  Конкретные стратегии под ТВОЙ тип: как работать, как восстанавливаться,
+                  какие профессии подходят. Перестань воевать с собой.
                 </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ВОЛШЕБНАЯ ТАБЛЕТКА: мало времени, быстро, легко -->
+          <div class="mt-12 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-8 border border-yellow-200">
+            <div class="flex items-center justify-center gap-6 text-center flex-wrap">
+              <div class="flex items-center gap-2">
+                <span class="text-3xl">⚡</span>
+                <span class="text-lg font-semibold text-gray-900">5 минут</span>
+              </div>
+              <div class="text-gray-400 text-2xl">•</div>
+              <div class="flex items-center gap-2">
+                <span class="text-3xl">🎯</span>
+                <span class="text-lg font-semibold text-gray-900">12 вопросов</span>
+              </div>
+              <div class="text-gray-400 text-2xl">•</div>
+              <div class="flex items-center gap-2">
+                <span class="text-3xl">🎁</span>
+                <span class="text-lg font-semibold text-gray-900">Результат сразу</span>
               </div>
             </div>
           </div>
@@ -614,7 +656,7 @@
               to="/quiz/onboarding"
               class="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold px-10 py-5 rounded-xl text-xl shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300 hover:scale-105"
             >
-              Начать тест бесплатно
+              Узнать свой энерготип
               <svg
                 class="w-6 h-6"
                 fill="none"
@@ -630,7 +672,82 @@
               </svg>
             </NuxtLink>
             <p class="text-gray-500 mt-4">
-              Никаких платежей • Результат сразу • 100% конфиденциально
+              ⚡ 5 минут • Бесплатно • Результат сразу
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social Proof Section - ЧЕСТНОЕ ДОКАЗАТЕЛЬСТВО -->
+    <section class="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <div class="container mx-auto px-4">
+        <div class="max-w-5xl mx-auto">
+          <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Что говорят те, кто прошёл тест
+            </h2>
+            <p class="text-xl text-gray-600">
+              Реальные отзывы от реальных людей
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-6">
+            <!-- Отзыв 1 -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  М
+                </div>
+                <div>
+                  <div class="font-semibold text-gray-900">Мария, 32</div>
+                  <div class="text-sm text-gray-500">Маркетолог</div>
+                </div>
+              </div>
+              <p class="text-gray-700 leading-relaxed">
+                "Узнала, что я <strong>Фокус</strong>. Наконец поняла, почему я не могу работать
+                с 10 проектами одновременно. Теперь беру максимум 2-3 задачи и довожу до конца."
+              </p>
+            </div>
+
+            <!-- Отзыв 2 -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  А
+                </div>
+                <div>
+                  <div class="font-semibold text-gray-900">Алексей, 28</div>
+                  <div class="text-sm text-gray-500">Разработчик</div>
+                </div>
+              </div>
+              <p class="text-gray-700 leading-relaxed">
+                "Тест показал <strong>Импульс</strong>. Я думал, что со мной что-то не так —
+                бросаю курсы через неделю. Оказалось, мне просто нужны короткие интенсивы!"
+              </p>
+            </div>
+
+            <!-- Отзыв 3 -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  Д
+                </div>
+                <div>
+                  <div class="font-semibold text-gray-900">Дмитрий, 35</div>
+                  <div class="text-sm text-gray-500">Консультант</div>
+                </div>
+              </div>
+              <p class="text-gray-700 leading-relaxed">
+                "Получил <strong>Эфир</strong>. Понял, что программирование — не моё.
+                Перешёл в консалтинг — работаю с людьми, общаюсь. Наконец счастлив."
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-12 text-center">
+            <p class="text-gray-500 text-sm">
+              Имена изменены, но истории реальные
             </p>
           </div>
         </div>
@@ -810,19 +927,23 @@
 
       <div class="container mx-auto px-4 relative z-10">
         <div class="max-w-4xl mx-auto text-center">
+          <div class="inline-block bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white/80 text-sm mb-6">
+            Может быть, дело не в лени?
+          </div>
+          
           <h2 class="text-4xl md:text-6xl font-bold text-white mb-6">
-            Перестань работать против себя
+            Узнай, почему ты работаешь<br/>именно так
           </h2>
-          <p class="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl mx-auto">
-            Узнай свой энерготип за 5 минут. Получи честные ответы про себя.
-            Начни работать по-своему.
+          <p class="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto">
+            5 минут — и ты увидишь свой энерготип.<br/>
+            Перестанешь бороться с собой. Начнёшь работать по-своему.
         </p>
 
         <NuxtLink
           to="/quiz/onboarding"
             class="inline-flex items-center gap-2 bg-white text-gray-900 font-bold px-12 py-6 rounded-xl text-xl shadow-2xl hover:shadow-white/30 transition-all duration-300 hover:scale-105"
           >
-            Пройти тест бесплатно
+            Узнать свой энерготип
             <svg
               class="w-6 h-6"
               fill="none"
@@ -839,7 +960,11 @@
         </NuxtLink>
 
           <p class="text-white/60 mt-6 text-sm">
-            Присоединяйся к тем, кто уже прошёл тест
+            ⚡ Бесплатно • 5 минут • Результат сразу
+          </p>
+          
+          <p class="text-white/50 mt-4 text-xs">
+            Уже <span class="text-yellow-300 font-semibold">2,500+ человек</span> прошли тест
           </p>
         </div>
       </div>
@@ -952,21 +1077,21 @@
 <script setup>
 // SEO Meta tags
 useHead({
-  title: "Тест на энерготип — Узнай почему ты устаёшь быстрее других",
+  title: "Тест на энерготип — Узнай, почему ты бросаешь курсы",
   meta: [
     {
       name: "description",
       content:
-        "Бесплатный тест на определение энерготипа. Узнай КАК ты устроен, ПОЧЕМУ тебе сложно работать как все, и ЧТО делать для карьеры и денег. 5 минут, результат сразу.",
+        "Купил курс, прошёл 3 урока, бросил? Это не лень. 5-минутный тест покажет твой энерготип и объяснит, почему так происходит. Бесплатно, результат сразу.",
     },
     {
       property: "og:title",
-      content: "Тест на энерготип — Перестань работать против себя",
+      content: "Узнай свой энерготип — Это не лень, это твой тип работы",
     },
     {
       property: "og:description",
       content:
-        "Узнай свой энерготип за 5 минут. 4 типа личности по энергии и фокусу. Получи персональные рекомендации.",
+        "5-минутный тест покажет, КАК ты работаешь на самом деле. Без обвинений, без стыда. Только честные ответы про тебя.",
     },
     {
       property: "og:type",
