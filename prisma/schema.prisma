@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite" // Change to "postgresql" for Railway
   url      = env("DATABASE_URL")
 }
 
@@ -22,15 +22,26 @@ model User {
 }
 
 model QuizSession {
-  id          String       @id @default(uuid())
-  userId      String
-  quizId      String
-  startedAt   DateTime     @default(now())
-  completedAt DateTime?
-  ipAddress   String?
-  user        User         @relation(fields: [userId], references: [id])
-  answers     TestAnswer[]
-  result      QuizResult?
+  id              String       @id @default(uuid())
+  userId          String
+  quizId          String
+  startedAt       DateTime     @default(now())
+  completedAt     DateTime?
+  ipAddress       String?
+  
+  // Landing tracking
+  landingCategory String?      // "courses", "career", "general"
+  landingVariant  String?      // "courses-a", "courses-b", etc.
+  utmSource       String?      // utm_source
+  utmMedium       String?      // utm_medium
+  utmCampaign     String?      // utm_campaign
+  
+  user            User         @relation(fields: [userId], references: [id])
+  answers         TestAnswer[]
+  result          QuizResult?
+  
+  @@index([landingCategory])
+  @@index([landingVariant])
   @@map("quiz_sessions")
 }
 
@@ -75,13 +86,19 @@ model Purchase {
 
 model LandingVariant {
   id              String           @id @default(uuid())
-  name            String
-  slug            String           @unique
-  contentJson     Json
+  category        String           // "courses", "career", "general"
+  name            String           // "Courses - Вариант A"
+  slug            String           @unique // "courses-a"
+  contentJson     Json             // Hero, painPoints, CTA, colors, SEO
   isActive        Boolean          @default(true)
-  trafficSplit    Int              @default(100)
+  trafficSplit    Int              @default(50) // % трафика для A/B теста
+  views           Int              @default(0)
+  conversions     Int              @default(0)
   createdAt       DateTime         @default(now())
   userAssignments UserAssignment[]
+  
+  @@unique([category, slug])
+  @@index([category, isActive])
   @@map("landing_variants")
 }
 

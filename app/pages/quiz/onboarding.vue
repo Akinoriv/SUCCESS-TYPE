@@ -132,6 +132,23 @@
 </template>
 
 <script setup>
+const route = useRoute()
+const router = useRouter()
+
+// Get landing source from URL query
+const landingSource = ref(route.query.source || 'general') // "courses", "career", "general"
+const utmSource = ref(route.query.utm_source || null)
+const utmMedium = ref(route.query.utm_medium || null)
+const utmCampaign = ref(route.query.utm_campaign || null)
+
+// Save to sessionStorage (in case of page reload)
+if (process.client) {
+  sessionStorage.setItem('landingSource', landingSource.value)
+  if (utmSource.value) sessionStorage.setItem('utmSource', utmSource.value)
+  if (utmMedium.value) sessionStorage.setItem('utmMedium', utmMedium.value)
+  if (utmCampaign.value) sessionStorage.setItem('utmCampaign', utmCampaign.value)
+}
+
 // State
 const profileData = ref({
   gender: "",
@@ -166,6 +183,11 @@ const selectAge = (age) => {
 
 const continueToQuestions = async () => {
   try {
+    // Yandex Metrika: Track quiz start
+    if (process.client && window.ym) {
+      ym(98611746, 'reachGoal', `start_quiz_${landingSource.value}`)
+    }
+
     // Create user and session
     const sessionResponse = await $fetch("/api/quiz/sessions", {
       method: "POST",
@@ -173,6 +195,11 @@ const continueToQuestions = async () => {
         userId: crypto.randomUUID(),
         quizId: "main",
         profileData: profileData.value,
+        // Landing tracking
+        landingSource: landingSource.value,
+        utmSource: utmSource.value,
+        utmMedium: utmMedium.value,
+        utmCampaign: utmCampaign.value,
       },
     });
 

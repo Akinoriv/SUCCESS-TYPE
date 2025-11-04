@@ -7,7 +7,16 @@ import { prisma } from "../../../utils/db";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { userId, quizId, profileData } = body;
+    const { 
+      userId, 
+      quizId, 
+      profileData,
+      // Landing tracking
+      landingSource,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+    } = body;
 
     // Валидация входных данных
     if (!userId || !quizId) {
@@ -48,12 +57,23 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Создаём новую сессию
+    // Определяем landing category из landingSource (например, "courses" или "courses-a")
+    const landingCategory = landingSource 
+      ? landingSource.split('-')[0] 
+      : 'general';
+
+    // Создаём новую сессию с tracking данными
     const session = await prisma.quizSession.create({
       data: {
         userId,
         quizId,
         ipAddress,
+        // Landing tracking
+        landingCategory: landingCategory,
+        landingVariant: landingSource || null,
+        utmSource: utmSource || null,
+        utmMedium: utmMedium || null,
+        utmCampaign: utmCampaign || null,
       },
     });
 

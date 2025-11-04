@@ -138,10 +138,10 @@
             <p class="text-gray-700 mt-4">
               Для реализации этих прав свяжитесь с нами по адресу:
               <a
-                href="mailto:info@example.com"
+                href="mailto:nika.nika1711+info@gmail.com"
                 class="text-indigo-600 hover:underline"
               >
-                info@example.com
+                nika.nika1711+info@gmail.com
               </a>
             </p>
           </section>
@@ -194,10 +194,10 @@
             <p class="text-gray-700 mt-2">
               Email:
               <a
-                href="mailto:info@example.com"
+                href="mailto:nika.nika1711+info@gmail.com"
                 class="text-indigo-600 hover:underline"
               >
-                info@example.com
+                nika.nika1711+info@gmail.com
               </a>
             </p>
           </section>

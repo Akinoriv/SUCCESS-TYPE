@@ -84,7 +84,7 @@
         >
           <h2 class="text-3xl font-bold text-gray-900 mb-4 flex items-center">
             🚨 Твои слабые стороны
-            </h2>
+          </h2>
           <p class="text-gray-700 mb-8 text-lg">(и это нормально)</p>
           <div class="space-y-8">
             <div
@@ -100,7 +100,7 @@
               </p>
             </div>
           </div>
-          </div>
+        </div>
 
         <!-- 💪 Как усилить себя -->
         <div
@@ -117,7 +117,7 @@
             >
               <h3 class="text-xl font-bold text-gray-900 mb-3">
                 {{ strategy.title }}
-            </h3>
+              </h3>
               <p class="text-gray-700 leading-relaxed whitespace-pre-line">
                 {{ strategy.description }}
               </p>
@@ -236,7 +236,7 @@
           <div class="text-6xl mb-4">🙏</div>
           <h3 class="text-2xl font-bold text-gray-900 mb-3">
             Спасибо за обратную связь!
-            </h3>
+          </h3>
           <p class="text-gray-700">
             Твоё мнение очень ценно и поможет нам улучшить тест для других
             людей.
@@ -260,16 +260,6 @@
               Персональный план на 30 дней, стратегии заработка и построение
               команды
             </p>
-            <div
-              class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded text-left max-w-2xl mx-auto"
-            >
-              <p class="text-sm text-gray-700">
-                <strong>Важно:</strong> Эта часть в будущем станет платной
-                (990-1490₽), но сейчас доступна бесплатно для тестирования.
-                Пожалуйста, пройди и оставь обратную связь — это поможет сделать
-                продукт лучше!
-              </p>
-            </div>
           </div>
 
           <!-- Блоки с превью (всегда видны) -->
@@ -342,8 +332,8 @@
                 v-if="!showFullReport"
                 class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent"
               ></div>
+            </div>
           </div>
-        </div>
 
           <!-- Кнопка получить полный отчёт -->
           <button
@@ -370,7 +360,7 @@
           >
             🔄 Пройти тест заново
           </button>
-      </div>
+        </div>
 
         <!-- Disclaimer -->
         <div
