@@ -47,20 +47,39 @@
 
           <!-- Text block -->
           <div
-            class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-10 max-w-3xl mx-auto text-left animate-fade-in-up animation-delay-400"
+            class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-10 max-w-3xl mx-auto animate-fade-in-up animation-delay-400"
           >
-            <p class="text-white/90 text-lg mb-4">
-              <strong class="text-white">Кто-то работает 12 часов в день. Кто-то — 4 часа спринтами.</strong>
-            </p>
-            <p class="text-white/90 text-lg mb-4">
-              Кто-то любит рутину. Кто-то — новизну каждый месяц.
-            </p>
-            <p class="text-white text-xl font-semibold">
-              Нет правильного способа. Есть <span class="text-yellow-300">ТВОЙ способ</span>.
-            </p>
-            <p class="text-white/80 text-lg mt-4">
-              Узнай его за 5 минут.
-            </p>
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+              <div class="text-center">
+                <p class="text-white/90 text-lg">
+                  Кто-то работает<br/><strong class="text-white text-xl">12 часов в день</strong>
+                </p>
+              </div>
+              <div class="text-center">
+                <p class="text-white/90 text-lg">
+                  Кто-то —<br/><strong class="text-white text-xl">4 часа спринтами</strong>
+                </p>
+              </div>
+              <div class="text-center">
+                <p class="text-white/90 text-lg">
+                  Кто-то любит<br/><strong class="text-white text-xl">рутину</strong>
+                </p>
+              </div>
+              <div class="text-center">
+                <p class="text-white/90 text-lg">
+                  Кто-то —<br/><strong class="text-white text-xl">новизну каждый месяц</strong>
+                </p>
+              </div>
+            </div>
+            
+            <div class="border-t border-white/20 pt-6">
+              <p class="text-white text-xl font-semibold text-center mb-3">
+                Нет правильного способа. Есть <span class="text-yellow-300">ТВОЙ способ</span>.
+              </p>
+              <p class="text-white/80 text-lg text-center">
+                Узнай свой <span class="text-yellow-300 font-semibold">энерготип</span> за 5 минут.
+              </p>
+            </div>
           </div>
 
           <!-- CTA Button -->
@@ -119,9 +138,6 @@
       <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto">
           <div class="text-center mb-16">
-            <div class="inline-block bg-indigo-100 px-4 py-2 rounded-full text-indigo-700 text-sm mb-4 font-semibold">
-              Валидация
-            </div>
             <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Может быть, ты работаешь<br/>не по своей природе?
             </h2>
