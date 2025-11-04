@@ -809,23 +809,23 @@
           </h2>
           
           <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-10 max-w-2xl mx-auto">
-            <p class="text-white/90 text-xl mb-3">
+            <p class="text-white text-xl mb-3 font-medium">
               У тебя свой уровень энергии.
             </p>
-            <p class="text-white/90 text-xl mb-3">
+            <p class="text-white text-xl mb-3 font-medium">
               Свой уровень концентрации.
             </p>
             <p class="text-white text-2xl font-bold">
               Своя стратегия достижения целей.
             </p>
-            <p class="text-white/80 text-lg mt-4">
+            <p class="text-white/90 text-lg mt-4">
               Узнай её за 5 минут — и перестань работать против себя.
             </p>
           </div>
 
           <NuxtLink
             to="/quiz/onboarding?source=general"
-            class="inline-flex items-center gap-2 bg-white text-gray-900 font-bold px-12 py-6 rounded-xl text-xl shadow-2xl hover:shadow-white/30 transition-all duration-300 hover:scale-105"
+            class="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold px-12 py-6 rounded-xl text-xl shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300 hover:scale-105"
           >
             Узнать свою стратегию
             <svg
@@ -843,7 +843,7 @@
             </svg>
           </NuxtLink>
 
-          <p class="text-white/60 mt-6 text-sm">
+          <p class="text-white mt-6 text-sm font-medium">
             Бесплатно • 5 минут • Персональный результат
           </p>
         </div>
