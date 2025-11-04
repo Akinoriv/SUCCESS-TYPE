@@ -220,7 +220,7 @@
             </p>
           </div>
 
-          <div class="grid md:grid-cols-3 gap-8 mb-12">
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <!-- Энергия -->
             <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
               <div class="text-5xl mb-4">⚡</div>
@@ -257,6 +257,17 @@
                 <li>• Как организовать жизнь под свою природу</li>
               </ul>
             </div>
+
+            <!-- Профессия -->
+            <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+              <div class="text-5xl mb-4">💼</div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-3">
+                Твоё дело
+              </h3>
+              <p class="text-gray-700">
+                Для каждого типа есть своя профессия или дело, где он будет <strong>самым конкурентоспособным</strong>. Узнай, где именно ты будешь выигрывать у других.
+              </p>
+            </div>
           </div>
 
           <!-- Important notice -->
@@ -271,7 +282,7 @@
                   Твой уровень энергии и концентрации <strong>может меняться</strong> с возрастом или жизненными ситуациями.
                 </p>
                 <p class="text-gray-800 text-lg mb-3">
-                  Поэтому тест можно проходить <strong>раз в год</strong> — перед началом новой главы жизни, при построении грандиозных планов, перед Новым годом или днем рождения.
+                  Когда жизнь меняется — меняешься и ты. Поэтому возвращайся к тесту, когда чувствуешь, что нужно пересобрать себя заново: перед началом новой главы жизни, при построении грандиозных планов, когда запутался или выгорел.
                 </p>
                 <p class="text-gray-900 font-semibold text-lg">
                   Методика поможет кому-то на всю жизнь, а кому-то — здесь и сейчас.
@@ -467,19 +478,19 @@
       </div>
     </section>
 
-    <!-- What You Get Free Section -->
+    <!-- What You Get Section -->
     <section
       class="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
     >
       <div class="container mx-auto px-4">
         <div class="max-w-5xl mx-auto">
           <div class="text-center mb-16">
-            <div class="inline-block bg-green-100 px-4 py-2 rounded-full text-green-700 text-sm mb-4 font-semibold">
-              🎁 Бесплатно
-            </div>
             <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Что ты получаешь бесплатно
+              Что ты получишь после теста
             </h2>
+            <p class="text-xl text-gray-600">
+              Возможно, ты даже не додумался, что здесь есть столько полезного
+            </p>
           </div>
 
           <div class="bg-white rounded-3xl p-8 md:p-12 shadow-2xl mb-8">
@@ -531,96 +542,54 @@
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div class="text-center bg-white rounded-2xl p-8 shadow-lg">
-            <p class="text-gray-700 text-xl mb-2">
-              Это только начало.
-            </p>
-            <p class="text-gray-900 text-2xl font-bold mb-2">
-              Теперь ты знаешь, <span class="text-indigo-600">КТО ты</span>.
-            </p>
-            <p class="text-gray-700 text-xl">
-              Но остаётся главный вопрос: <span class="font-semibold">ЧТО с этим делать дальше?</span>
-            </p>
-            <p class="text-gray-600 mt-4">
-              Об этом — в платной части. 🚀
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Paid Section -->
-    <section class="py-20 bg-white">
-      <div class="container mx-auto px-4">
-        <div class="max-w-5xl mx-auto">
-          <div class="text-center mb-16">
-            <div class="inline-block bg-purple-100 px-4 py-2 rounded-full text-purple-700 text-sm mb-4 font-semibold">
-              💎 Premium
-            </div>
-            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Хочешь копнуть глубже?
-            </h2>
-            <p class="text-xl text-gray-600">
-              После бесплатного теста ты сможешь получить персональный план действий за <span class="font-bold text-indigo-600">490₽</span>
-            </p>
-          </div>
-
-          <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-8 md:p-12 shadow-2xl border-2 border-indigo-200">
-            <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">
-              Что входит в платную часть:
-            </h3>
-
-            <div class="space-y-6 mb-10">
-              <div class="flex items-start gap-4 bg-white rounded-2xl p-6 shadow">
-                <div class="text-4xl">💎</div>
+              <div class="flex items-start gap-4">
+                <div class="text-3xl">💼</div>
                 <div>
-                  <h4 class="text-xl font-bold text-gray-900 mb-2">
-                    ПЕРСОНАЛЬНЫЙ ПЛАН НА 30 ДНЕЙ
-                  </h4>
-                  <p class="text-gray-700">
+                  <h3 class="text-2xl font-bold text-gray-900 mb-2">
+                    Где ты будешь самым конкурентоспособным
+                  </h3>
+                  <p class="text-gray-700 text-lg">
+                    Профессии и дела, где именно твой тип выигрывает у других. Узнай, в какой сфере ты будешь самым сильным.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4">
+                <div class="text-3xl">🗓️</div>
+                <div>
+                  <h3 class="text-2xl font-bold text-gray-900 mb-2">
+                    Персональный план на 30 дней
+                  </h3>
+                  <p class="text-gray-700 text-lg">
                     Что делать прямо сейчас, с этой секунды. Конкретный чек-лист в зависимости от твоего типа — если ты только что прошел курс, решил поменять деятельность, запутался или в тревоге.
                   </p>
                 </div>
               </div>
 
-              <div class="flex items-start gap-4 bg-white rounded-2xl p-6 shadow">
-                <div class="text-4xl">💰</div>
+              <div class="flex items-start gap-4">
+                <div class="text-3xl">💰</div>
                 <div>
-                  <h4 class="text-xl font-bold text-gray-900 mb-2">
-                    КАК НАЧАТЬ ЗАРАБАТЫВАТЬ
-                  </h4>
-                  <p class="text-gray-700">
-                    Твой вид деятельности, где ты будешь выигрывать у других. Конкретные примеры профессий для твоего типа и как начать зарабатывать на этой работе.
+                  <h3 class="text-2xl font-bold text-gray-900 mb-2">
+                    Как начать зарабатывать на своём деле
+                  </h3>
+                  <p class="text-gray-700 text-lg">
+                    Конкретные примеры профессий для твоего типа и как начать зарабатывать на этой работе. Где именно ты будешь выигрывать у других.
                   </p>
                 </div>
               </div>
 
-              <div class="flex items-start gap-4 bg-white rounded-2xl p-6 shadow">
-                <div class="text-4xl">👥</div>
+              <div class="flex items-start gap-4">
+                <div class="text-3xl">👥</div>
                 <div>
-                  <h4 class="text-xl font-bold text-gray-900 mb-2">
-                    ТВОЯ КОМАНДА МЕЧТЫ
-                  </h4>
-                  <p class="text-gray-700">
+                  <h3 class="text-2xl font-bold text-gray-900 mb-2">
+                    Твоя команда мечты
+                  </h3>
+                  <p class="text-gray-700 text-lg">
                     С кем тебе лучше всего работать, кто будет тебя дополнять, какие сотрудники нужны для делегирования, чтобы довести проект до максимума.
                   </p>
                 </div>
               </div>
-            </div>
-
-            <div class="text-center">
-              <div class="inline-block bg-white rounded-2xl px-8 py-4 shadow-lg mb-6">
-                <p class="text-gray-600 text-sm mb-1">Полный персональный план</p>
-                <p class="text-5xl font-black text-indigo-600">490₽</p>
-              </div>
-              
-              <p class="text-gray-700 text-lg">
-                Сначала пройди бесплатный тест — посмотри, подходит ли тебе описание.<br/>
-                Если зайдет — сможешь купить подробный план.
-              </p>
             </div>
           </div>
         </div>
@@ -786,7 +755,7 @@
                 </svg>
               </summary>
               <p class="mt-4 text-gray-600">
-                Да. Твой уровень энергии может меняться с возрастом или жизненными ситуациями, поэтому можно проходить раз в год.
+                Да. Твой уровень энергии может меняться с возрастом или жизненными ситуациями. Возвращайся к тесту, когда чувствуешь, что нужно пересобрать себя заново.
               </p>
             </details>
 
