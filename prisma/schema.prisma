@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite" // Change to "postgresql" for Railway
+  provider = "postgresql" // Change to "sqlite" for local dev
   url      = env("DATABASE_URL")
 }
 
