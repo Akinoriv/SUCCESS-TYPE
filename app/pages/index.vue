@@ -451,28 +451,9 @@
           </div>
 
           <div class="mt-12 text-center">
-            <p class="text-gray-700 text-xl mb-6">
+            <p class="text-gray-700 text-xl">
               Узнал себя? Пройди тест, чтобы точно определить свой тип<br/>и получить персональную стратегию.
             </p>
-            <NuxtLink
-              to="/quiz/onboarding?source=general"
-              class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold px-10 py-4 rounded-xl text-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-            >
-              Узнать свой тип
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                ></path>
-              </svg>
-        </NuxtLink>
           </div>
         </div>
       </div>
@@ -851,14 +832,14 @@
     </section>
 
     <!-- Disclaimer -->
-    <section class="py-12 bg-gray-50 border-t border-gray-200">
+    <section class="py-12 bg-gray-100 border-t border-gray-300">
       <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto">
-          <div class="bg-white border border-gray-200 rounded-xl p-6">
-            <h3 class="text-sm font-semibold text-gray-900 mb-3">
+          <div class="bg-white border-2 border-gray-300 rounded-xl p-6 shadow-sm">
+            <h3 class="text-base font-bold text-gray-900 mb-4">
               ⚠️ Важное уточнение
             </h3>
-            <div class="text-xs text-gray-600 space-y-2">
+            <div class="text-sm text-gray-800 space-y-3">
               <p>
                 Этот тест <strong>НЕ является медицинской диагностикой или карьерным консультированием</strong>. Результаты носят рекомендательный характер и основаны на самоанализе.
               </p>
@@ -867,7 +848,7 @@
               </p>
               <p>
                 Проходя тест, вы соглашаетесь с
-                <NuxtLink to="/privacy" class="text-indigo-600 hover:underline"
+                <NuxtLink to="/privacy" class="text-indigo-600 hover:underline font-medium"
                   >политикой конфиденциальности</NuxtLink
                 >
                 и даёте согласие на обработку предоставленных данных для
@@ -937,10 +918,6 @@
             <p>
               &copy; {{ new Date().getFullYear() }} Энерготипинг. Все права
               защищены.
-            </p>
-            <p class="mt-2 text-xs">
-              Этот тест не является медицинским или психологическим
-              диагностическим инструментом.
             </p>
           </div>
       </div>
