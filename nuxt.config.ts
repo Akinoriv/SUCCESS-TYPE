@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
-  devtools: { enabled: true },
+  devtools: { enabled: process.env.NODE_ENV !== "production" },
 
   modules: ["@pinia/nuxt", "@nuxtjs/tailwindcss"],
 
@@ -23,10 +23,15 @@ export default defineNuxtConfig({
     experimental: {
       wasm: true,
     },
-    prerender: {
-      crawlLinks: true,
-      routes: ["/"],
-    },
+    // Убираем prerender для production - он конфликтует с SSR
+    // prerender: {
+    //   crawlLinks: true,
+    //   routes: ["/"],
+    // },
+    // Настройки для правильной работы статических файлов
+    compressPublicAssets: true,
+    // Правильная настройка для Railway
+    preset: "node-server",
   },
 
   routeRules: {
@@ -38,10 +43,19 @@ export default defineNuxtConfig({
     "/privacy": { swr: 86400 },
     "/terms": { swr: 86400 },
     "/disclaimer": { swr: 86400 },
+    // Quiz страницы - SSR без кэша
+    "/quiz/**": { ssr: true, cache: false },
   },
 
   experimental: {
     payloadExtraction: false,
     renderJsonPayloads: false,
+  },
+
+  // Настройки для production
+  ssr: true,
+  sourcemap: {
+    server: false,
+    client: false,
   },
 });
